@@ -30,11 +30,6 @@ class AccreditationReportGenerator:
     def _project_query(self, year=None, department=None):
         query = ResearchProject.query
 
-        if year:
-            query = query.filter(
-                extract('year', ResearchProject.start_date) == year
-            )
-
         department = self._normalize_department(department)
         if department:
             query = query.filter(func.lower(ResearchProject.department) == department.lower())
@@ -68,11 +63,6 @@ class AccreditationReportGenerator:
             ResearchProject, Publication.project_id == ResearchProject.project_id
         )
 
-        if year:
-            query = query.filter(
-                Publication.year_of_publication == year
-            )
-
         department = self._normalize_department(department)
         if department:
             query = query.filter(func.lower(ResearchProject.department) == department.lower())
@@ -102,11 +92,6 @@ class AccreditationReportGenerator:
             ResearchProject, IPR.project_id == ResearchProject.project_id
         )
 
-        if year:
-            query = query.filter(
-                extract('year', IPR.filing_date) == year
-            )
-
         department = self._normalize_department(department)
         if department:
             query = query.filter(func.lower(ResearchProject.department) == department.lower())
@@ -133,11 +118,6 @@ class AccreditationReportGenerator:
         query = Startup.query.join(
             ResearchProject, Startup.project_id == ResearchProject.project_id
         )
-
-        if year:
-            query = query.filter(
-                extract('year', ResearchProject.start_date) == year
-            )
 
         department = self._normalize_department(department)
         if department:
@@ -173,10 +153,6 @@ class AccreditationReportGenerator:
         faculty_with_projects = []
         for f in faculty:
             project_query = ResearchProject.query.filter_by(faculty_id=f.person_id)
-            if year:
-                project_query = project_query.filter(
-                    extract('year', ResearchProject.start_date) == year
-                )
             if department and department != 'All':
                 department_filter = department.strip().lower()
                 project_query = project_query.filter(func.lower(ResearchProject.department) == department_filter)
@@ -189,10 +165,6 @@ class AccreditationReportGenerator:
             pub_query = db.session.query(db.func.count(Publication.publication_id)).join(
                 ResearchProject, Publication.project_id == ResearchProject.project_id
             ).filter(ResearchProject.faculty_id == f.person_id)
-            if year:
-                pub_query = pub_query.filter(
-                    extract('year', ResearchProject.start_date) == year
-                )
             if department and department != 'All':
                 department_filter = department.strip().lower()
                 pub_query = pub_query.filter(func.lower(ResearchProject.department) == department_filter)
@@ -205,10 +177,6 @@ class AccreditationReportGenerator:
             ipr_query = db.session.query(db.func.count(IPR.ipr_id)).join(
                 ResearchProject, IPR.project_id == ResearchProject.project_id
             ).filter(ResearchProject.faculty_id == f.person_id)
-            if year:
-                ipr_query = ipr_query.filter(
-                    extract('year', ResearchProject.start_date) == year
-                )
             if department and department != 'All':
                 department_filter = department.strip().lower()
                 ipr_query = ipr_query.filter(func.lower(ResearchProject.department) == department_filter)
@@ -240,10 +208,6 @@ class AccreditationReportGenerator:
             project_query = db.session.query(db.func.count(ProjectPerson.project_id)).join(
                 ResearchProject, ProjectPerson.project_id == ResearchProject.project_id
             ).filter(ProjectPerson.person_id == s.person_id)
-            if year:
-                project_query = project_query.filter(
-                    extract('year', ResearchProject.start_date) == year
-                )
             if department and department != 'All':
                 department_filter = department.strip().lower()
                 project_query = project_query.filter(func.lower(ResearchProject.department) == department_filter)
