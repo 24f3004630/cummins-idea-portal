@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3>My Applications</h3>
+        <hr>
+    </div>
+</div>
+
+{% if applications %}
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Project</th>
+                <th>Faculty</th>
+                <th>Applied Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in applications %}
+            {% set project, faculty = application_projects[app.application_id] %}
+            <tr>
+                <td>
+                    <a href="/student/project/{{ project.project_id }}" class="text-decoration-none">
+                        {{ project.project_title }}
+                    </a>
+                </td>
+                <td>{{ faculty.name }}</td>
+                <td>{{ app.application_date.strftime('%d-%m-%Y') }}</td>
+                <td>
+                    {% if app.status == 'Pending' %}
+                        <span class="badge bg-warning">Pending</span>
+                    {% elif app.status == 'Approved' %}
+                        <span class="badge bg-success">Approved</span>
+                    {% else %}
+                        <span class="badge bg-danger">Rejected</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if app.status == 'Pending' %}
+                    <form method="POST" action="/student/application/{{ app.application_id }}/cancel" style="display:inline;">
+                        <button class="btn btn-sm btn-danger" onclick="return confirm('Cancel this application?')">Cancel</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info">
+    You haven't applied to any projects yet. <a href="/student/projects">Explore projects</a>
+</div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <a href="/student/dashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+{% endblock %}

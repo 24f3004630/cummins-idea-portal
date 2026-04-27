@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #0B3D91;
+        --accent-gold: #D4AF37;
+        --light-blue: #4A90E2;
+    }
+    
+    .login-wrapper {
+        min-height: 100vh;
+        background: linear-gradient(135deg, var(--primary-color) 0%, #052847 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .login-container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(11, 61, 145, 0.3);
+        overflow: hidden;
+        max-width: 450px;
+        width: 100%;
+        animation: slideUp 0.5s ease;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .login-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--light-blue) 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+    }
+    
+    .login-header h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+    
+    .login-header p {
+        font-size: 0.95rem;
+        opacity: 0.9;
+    }
+    
+    .login-icon {
+        font-size: 3rem;
+        color: var(--accent-gold);
+        margin-bottom: 15px;
+    }
+    
+    .login-body {
+        padding: 40px 30px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--light-blue);
+        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        color: var(--dark-text);
+    }
+    
+    .btn-login {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--light-blue) 100%);
+        color: white;
+        padding: 12px 20px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 8px;
+        width: 100%;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+    
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(11, 61, 145, 0.3);
+        color: white;
+    }
+    
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 25px 0;
+        color: #999;
+        font-size: 0.9rem;
+    }
+    
+    .divider::before,
+    .divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #e0e0e0;
+    }
+    
+    .divider::before {
+        margin-right: 15px;
+    }
+    
+    .divider::after {
+        margin-left: 15px;
+    }
+    
+    .register-options {
+        display: flex;
+        gap: 10px;
+        flex-direction: column;
+    }
+    
+    .btn-register {
+        padding: 12px 20px;
+        font-weight: 600;
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+        background: white;
+        color: var(--primary-color);
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
+    
+    .btn-register:hover {
+        border-color: var(--light-blue);
+        color: var(--light-blue);
+        background: rgba(74, 144, 226, 0.05);
+        text-decoration: none;
+    }
+    
+    .alert {
+        border-radius: 8px;
+        border: none;
+        margin-bottom: 20px;
+    }
+    
+    .alert-danger {
+        background: #fee;
+        color: #c33;
+    }
+    
+    .alert-info {
+        background: #eff;
+        color: #0a5;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
+    
+    .alert-info strong {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--primary-color);
+    }
+    
+    .alert-info code {
+        background: rgba(11, 61, 145, 0.1);
+        padding: 3px 7px;
+        border-radius: 3px;
+        font-family: 'Courier New', monospace;
+    }
+</style>
+
+<div class="login-wrapper">
+    <div class="login-container">
+        <!-- Header -->
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="fas fa-sign-in-alt"></i>
+            </div>
+            <h2>Login</h2>
+            <p>Welcome back to CCEW Research Portal</p>
+        </div>
+        
+        <!-- Body -->
+        <div class="login-body">
+            <!-- Error Alert -->
+            {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-circle"></i> {{ error }}
+                </div>
+            {% endif %}
+            
+            <!-- Login Form -->
+            <form method="POST">
+                <div class="form-group">
+                    <label for="email" class="form-label">
+                        <i class="fas fa-envelope"></i> Email Address
+                    </label>
+                    <input 
+                        type="email" 
+                        class="form-control" 
+                        id="email" 
+                        name="email" 
+                        placeholder="Enter your email" 
+                        required
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input 
+                        type="password" 
+                        class="form-control" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter your password" 
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="btn btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+            
+            <!-- Divider -->
+            <div class="divider">Or</div>
+            
+            <!-- Register Links -->
+            <p style="text-align: center; color: #666; margin-bottom: 15px; font-weight: 500;">Don't have an account?</p>
+            <div class="register-options">
+                <a href="/auth/register/student" class="btn-register">
+                    <i class="fas fa-user-graduate"></i> Register as Student
+                </a>
+                <a href="/auth/register/faculty" class="btn-register">
+                    <i class="fas fa-chalkboard-user"></i> Register as Faculty
+                </a>
+            </div>
+            
+            <!-- Demo Credentials -->
+            <div class="alert alert-info mt-4">
+                <strong><i class="fas fa-info-circle"></i> Demo Credentials</strong>
+                Email: <code>admin@portal.com</code>
+                <br>Password: <code>admin123</code>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

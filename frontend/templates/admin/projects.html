@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Projects</h2>
+
+<table class="table table-bordered">
+<tr>
+  <th>Title</th>
+  <th>Domain</th>
+  <th>Status</th>
+  <th>Action</th>
+</tr>
+
+{% for p in projects %}
+<tr>
+  <td>{{ p.project_title }}</td>
+  <td>{{ p.domain }}</td>
+  <td>
+    {% if p.is_approved %}
+      <span class="badge bg-success">Approved</span>
+    {% else %}
+      <span class="badge bg-warning">Pending</span>
+    {% endif %}
+  </td>
+
+  <td>
+    {% if not p.is_approved %}
+      <a class="btn btn-success btn-sm" href="/admin/approve_project/{{ p.project_id }}">Approve</a>
+    {% endif %}
+  </td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

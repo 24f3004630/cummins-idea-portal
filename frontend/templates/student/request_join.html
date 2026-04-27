@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3>Request to Join Project</h3>
+        <h5 class="text-muted">{{ project.project_title }}</h5>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="POST">
+            <div class="card">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Why do you want to join this project? (Optional)</label>
+                        <textarea class="form-control" id="message" name="message" rows="6" 
+                                  placeholder="Tell the faculty why you're interested in this project, what you can contribute, and what you hope to learn..."></textarea>
+                        <small class="text-muted">A compelling message increases your chances of getting accepted</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-success btn-lg">Send Request</button>
+                <a href="/student/project/{{ project.project_id }}" class="btn btn-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Project Info</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Faculty:</strong> Waiting for info...</p>
+                <p><strong>Domain:</strong> {{ project.domain }}</p>
+                <p><strong>Team Size:</strong> {{ project.team_size }}</p>
+                <p><strong>Status:</strong> <span class="badge bg-success">{{ project.project_status }}</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

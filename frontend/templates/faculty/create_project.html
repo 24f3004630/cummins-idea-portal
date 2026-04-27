@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3>Create New Research Project</h3>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="POST" class="needs-validation">
+            <div class="mb-3">
+                <label for="project_title" class="form-label">Project Title *</label>
+                <input type="text" class="form-control" id="project_title" name="project_title" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="project_description" class="form-label">Project Description *</label>
+                <textarea class="form-control" id="project_description" name="project_description" rows="4" required></textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="domain" class="form-label">Research Domain *</label>
+                        <select class="form-select" id="domain" name="domain" required>
+                            <option value="">-- Select a Domain --</option>
+                            <option value="Artificial Intelligence">Artificial Intelligence</option>
+                            <option value="Data Science">Data Science</option>
+                            <option value="Cybersecurity">Cybersecurity</option>
+                            <option value="IoT">IoT</option>
+                            <option value="Web Development">Web Development</option>
+                            <option value="Mobile Development">Mobile Development</option>
+                            <option value="Cloud Computing">Cloud Computing</option>
+                            <option value="Blockchain">Blockchain</option>
+                            <option value="Healthcare Tech">Healthcare Tech</option>
+                            <option value="FinTech">FinTech</option>
+                            <option value="EdTech">EdTech</option>
+                            <option value="Smart Systems">Smart Systems</option>
+                            <option value="Multidisciplinary">Multidisciplinary</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="department" class="form-label">Department</label>
+                      <select name="department" class="form-control" required>
+    <option value="">-- Select Department --</option>
+    <option value="Computer Science">Computer Science</option>
+    <option value="Information Technology">Information Technology</option>
+    <option value="Mechanical">Mechanical</option>
+    <option value="Electronics and Telecommunication">Electronics and Telecommunication</option>
+    <option value="Instrumentation">Instrumentation</option>
+</select>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="team_size" class="form-label">Team Size *</label>
+                        <input type="number" class="form-control" id="team_size" name="team_size" min="1" value="1" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="program_location" class="form-label">Program Location</label>
+                        <input type="text" class="form-control" id="program_location" name="program_location">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="required_skills" class="form-label">Required Skills (comma-separated)</label>
+                <input type="text" class="form-control" id="required_skills" name="required_skills" 
+                       placeholder="e.g., Python, Machine Learning, Data Analysis">
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Create Project</button>
+                <a href="/faculty/projects" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

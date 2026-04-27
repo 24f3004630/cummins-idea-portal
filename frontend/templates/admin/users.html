@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">Manage Users</h2>
+
+<!-- Search Form -->
+<form method="GET" action="/admin/search" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Search users by name...">
+        <button class="btn btn-outline-secondary" type="submit">Search</button>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Type</th>
+            <th>Department</th>
+            <th>Approved</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.type }}</td>
+            <td>{{ user.department or 'N/A' }}</td>
+            <td>
+                {% if user.is_approved %}
+                    <span class="badge bg-success">Approved</span>
+                {% else %}
+                    <span class="badge bg-warning">Pending</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if not user.is_approved %}
+                    <a href="/admin/approve/{{ user.person_id }}" class="btn btn-success btn-sm">Approve</a>
+                    <a href="/admin/reject/{{ user.person_id }}" class="btn btn-danger btn-sm">Reject</a>
+                {% else %}
+                    <a href="/admin/deactivate/{{ user.person_id }}" class="btn btn-warning btn-sm">Deactivate</a>
+                {% endif %}
+                <a href="/admin/delete/{{ user.person_id }}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="/admin/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+
+{% endblock %}

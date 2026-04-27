@@ -1,0 +1,381 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-2">
+                <i class="fas fa-clipboard-list"></i> Accreditation Report Generator
+            </h1>
+            <p class="text-muted">Generate comprehensive institutional accreditation reports for CCEW</p>
+            <p class="text-muted">Showing <strong>{{ selected_department }}</strong> for year <strong>{{ current_year }}</strong>.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary" id="downloadJson">
+                    <i class="fas fa-download"></i> JSON
+                </button>
+                <button type="button" class="btn btn-outline-primary" id="downloadCsv">
+                    <i class="fas fa-download"></i> CSV
+                </button>
+                <button type="button" class="btn btn-outline-info" id="downloadPdf">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Year and Department Selection -->
+    <form class="row mb-4" method="get" action="/admin/accreditation">
+        <div class="col-md-3">
+            <label for="yearSelect" class="form-label">Select Academic Year</label>
+            <select class="form-select" id="yearSelect" name="year">
+                {% for year in available_years %}
+                <option value="{{ year }}" {% if year == current_year %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="departmentSelect" class="form-label">Select Department</label>
+            <select class="form-select" id="departmentSelect" name="department">
+                {% for dept in available_departments %}
+                <option value="{{ dept }}" {% if dept == selected_department %}selected{% endif %}>{{ dept }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-5 d-flex align-items-end justify-content-end">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-sync-alt"></i> Load Report
+            </button>
+        </div>
+    </form>
+
+    <!-- Executive Summary -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white" style="background: linear-gradient(135deg, #0B3D91 0%, #052847 100%);">
+            <h5 class="mb-0"><i class="fas fa-star"></i> Executive Summary</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for highlight in report.summary.highlights %}
+                <div class="col-md-6 mb-2">
+                    <p class="mb-1">
+                        <i class="fas fa-check-circle text-success"></i>
+                        <strong>{{ highlight }}</strong>
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Metrics -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-project-diagram"></i> Research Projects</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #0B3D91;">{{ report.projects.total_projects }}</div>
+                                <small class="text-muted">Total Projects</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #28A745;">{{ report.projects.approved_projects }}</div>
+                                <small class="text-muted">Approved</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #FFC107;">{{ report.projects.completed_projects }}</div>
+                                <small class="text-muted">Completed</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #17A2B8;">{{ report.projects.ongoing_projects }}</div>
+                                <small class="text-muted">Ongoing</small>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <small class="text-muted">Avg Team Size: <strong>{{ "%.1f"|format(report.projects.average_team_size) }}</strong> members</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="fas fa-book"></i> Publications</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #0B3D91;">{{ report.publications.total_publications }}</div>
+                                <small class="text-muted">Total</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #28A745;">{{ report.publications.published }}</div>
+                                <small class="text-muted">Published</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #D4AF37;">{{ report.publications.international_journals }}</div>
+                                <small class="text-muted">International Journals</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #4A90E2;">{{ report.publications.conferences }}</div>
+                                <small class="text-muted">Conferences</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- IPR Metrics -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="fas fa-certificate"></i> IPR & Patents</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #0B3D91;">{{ report.iprs.total_iprs_filed }}</div>
+                                <small class="text-muted">Total Filed</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #28A745;">{{ report.iprs.patents_granted }}</div>
+                                <small class="text-muted">Granted</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #FFC107;">{{ report.iprs.patents_pending }}</div>
+                                <small class="text-muted">Pending</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #0B3D91;">{{ report.iprs.patents_filed }}</div>
+                                <small class="text-muted">Patents</small>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <small class="text-muted">Avg Days to Grant: <strong>{{ "%.0f"|format(report.iprs.average_days_to_grant) }}</strong> days</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-danger text-white">
+                    <h6 class="mb-0"><i class="fas fa-rocket"></i> Startups Incubated</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #0B3D91;">{{ report.startups.total_startups }}</div>
+                                <small class="text-muted">Total Startups</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #28A745;">{{ report.startups.startups_live }}</div>
+                                <small class="text-muted">Live</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #D4AF37;">₹ {{ "%.0f"|format(report.startups.total_funding_raised/10000) }}L</div>
+                                <small class="text-muted">Funding Raised (L)</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #4A90E2;">₹ {{ "%.0f"|format(report.startups.total_revenue_generated/10000) }}L</div>
+                                <small class="text-muted">Revenue (L)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stakeholder Engagement -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header" style="background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: white;">
+                    <h6 class="mb-0"><i class="fas fa-chalkboard-user"></i> Faculty Engagement</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-12 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #0B3D91;">{{ report.faculty.total_faculty }}</div>
+                                <small class="text-muted">Total Faculty</small>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #28A745;">{{ report.faculty.faculty_with_projects }}</div>
+                                <small class="text-muted">With Active Projects</small>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #4A90E2;">{{ report.faculty.faculty_with_publications }}</div>
+                                <small class="text-muted">With Publications</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header" style="background: linear-gradient(135deg, #4A90E2 0%, #2E5C9A 100%); color: white;">
+                    <h6 class="mb-0"><i class="fas fa-user-graduate"></i> Student Engagement</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-12 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #0B3D91;">{{ report.students.total_students }}</div>
+                                <small class="text-muted">Total Students</small>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #28A745;">{{ report.students.students_in_projects }}</div>
+                                <small class="text-muted">In Research Projects</small>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="stat-box">
+                                <div class="stat-number" style="color: #D4AF37;">{% if report.students.total_students > 0 %}{{ (report.students.students_in_projects / report.students.total_students * 100)|int }}%{% else %}0%{% endif %}</div>
+                                <small class="text-muted">Research Participation</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics Summary -->
+    <div class="card mt-4">
+        <div class="card-header" style="background: linear-gradient(135deg, #0B3D91 0%, #052847 100%); color: white;">
+            <h6 class="mb-0"><i class="fas fa-tachometer-alt"></i> Key Performance Indicators</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <h4 style="color: #0B3D91;">{{ report.summary.key_metrics.research_productivity }}</h4>
+                    <p class="text-muted">Research Productivity Index</p>
+                    <small>Projects + Publications</small>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h4 style="color: #D4AF37;">{{ report.summary.key_metrics.innovation_index }}</h4>
+                    <p class="text-muted">Innovation Index</p>
+                    <small>IPRs + Startups</small>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h4 style="color: #28A745;">{{ report.summary.key_metrics.stakeholder_engagement }}</h4>
+                    <p class="text-muted">Stakeholder Engagement</p>
+                    <small>Faculty + Students</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-box {
+        padding: 15px;
+        border-radius: 8px;
+        background: rgba(0,0,0,0.02);
+    }
+    
+    .card {
+        border: none;
+        border-top: 4px solid #0B3D91;
+    }
+</style>
+
+<script>
+function loadReport() {
+    const year = document.getElementById('yearSelect').value;
+    const department = document.getElementById('departmentSelect').value;
+    window.location.href = `/admin/accreditation?year=${year}&department=${encodeURIComponent(department)}`;
+}
+
+document.getElementById('downloadJson').addEventListener('click', function() {
+    const year = document.getElementById('yearSelect').value;
+    const department = document.getElementById('departmentSelect').value;
+    window.location.href = `/admin/accreditation/download/json?year=${year}&department=${encodeURIComponent(department)}`;
+});
+
+document.getElementById('downloadCsv').addEventListener('click', function() {
+    const year = document.getElementById('yearSelect').value;
+    const department = document.getElementById('departmentSelect').value;
+    window.location.href = `/admin/accreditation/download/csv?year=${year}&department=${encodeURIComponent(department)}`;
+});
+
+document.getElementById('downloadPdf').addEventListener('click', function() {
+    const year = document.getElementById('yearSelect').value;
+    const department = document.getElementById('departmentSelect').value;
+
+    fetch('/admin/accreditation/generate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ year, department, format: 'pdf' })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'queued') {
+            alert('PDF generation is queued. Poll the task URL for status.');
+        } else {
+            alert('Failed to queue PDF generation: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(() => {
+        alert('Could not queue PDF generation. Please try again later.');
+    });
+});
+</script>
+
+{% endblock %}

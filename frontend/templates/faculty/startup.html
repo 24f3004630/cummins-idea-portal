@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-rocket"></i> Project Startup Status</h2>
+            <p class="text-muted"><strong>Project:</strong> {{ project.project_title }}</p>
+        </div>
+        <a href="/faculty/project/{{ project.project_id }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Project
+        </a>
+    </div>
+
+    {% if startup %}
+    <!-- Startup Exists -->
+    <div class="row">
+        <!-- Startup Details Card -->
+        <div class="col-md-7 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-rocket"></i> {{ startup.startup_name }}
+                    </h5>
+                </div>
+
+                <div class="card-body">
+                    <!-- Startup Name -->
+                    <div class="mb-3 pb-3 border-bottom">
+                        <strong><i class="fas fa-building"></i> Startup Name</strong>
+                        <p class="text-muted mb-0">{{ startup.startup_name }}</p>
+                    </div>
+
+                    <!-- Registration Number -->
+                    {% if startup.registration_number %}
+                    <div class="mb-3 pb-3 border-bottom">
+                        <strong><i class="fas fa-certificate"></i> Registration Number</strong>
+                        <p class="text-muted mb-0"><code>{{ startup.registration_number }}</code></p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Development Status -->
+                    <div class="mb-3 pb-3 border-bottom">
+                        <strong><i class="fas fa-chart-line"></i> Development Stage</strong>
+                        <p class="mb-0">
+                            {% if startup.development_status == 'Idea' %}
+                                <span class="badge bg-secondary">Idea</span>
+                            {% elif startup.development_status == 'MVP' %}
+                                <span class="badge bg-info">MVP</span>
+                            {% elif startup.development_status == 'Beta' %}
+                                <span class="badge bg-warning text-dark">Beta</span>
+                            {% elif startup.development_status == 'Live' %}
+                                <span class="badge bg-success">Live</span>
+                            {% elif startup.development_status == 'Growth' %}
+                                <span class="badge bg-primary">Growth</span>
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <!-- Fund Amount -->
+                    <div class="mb-3 pb-3 border-bottom">
+                        <strong><i class="fas fa-money-bill-wave"></i> Funding Raised</strong>
+                        <p class="text-success fw-bold mb-0">₹ {{ "%.2f"|format(startup.fund_amount) }}</p>
+                    </div>
+
+                    <!-- Revenue Generated -->
+                    <div class="mb-3">
+                        <strong><i class="fas fa-chart-bar"></i> Revenue Generated</strong>
+                        <p class="text-info fw-bold mb-0">₹ {{ "%.2f"|format(startup.revenue_generated) }}</p>
+                    </div>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="card-footer bg-light">
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editStartupModal">
+                        <i class="fas fa-edit"></i> Update Startup Details
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-sm bg-light">
+                <div class="card-body">
+                    <h6 class="card-title text-muted"><i class="fas fa-chart-pie"></i> Financial Summary</h6>
+                    <hr>
+                    
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Total Funding</small>
+                        <h5 class="text-success">₹{{ "%.0f"|format(startup.fund_amount) }}</h5>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Total Revenue</small>
+                        <h5 class="text-info">₹{{ "%.0f"|format(startup.revenue_generated) }}</h5>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted d-block">ROI</small>
+                        <h5 class="text-primary">
+                            {% if startup.fund_amount > 0 %}
+                                {{ "%.1f"|format(((startup.revenue_generated - startup.fund_amount) / startup.fund_amount) * 100) }}%
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </h5>
+                    </div>
+
+                    <div class="mb-0">
+                        <small class="text-muted d-block">Stage</small>
+                        <h5 class="badge bg-primary">{{ startup.development_status }}</h5>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline Card -->
+            <div class="card shadow-sm mt-3 bg-light">
+                <div class="card-body">
+                    <h6 class="card-title text-muted"><i class="fas fa-calendar-alt"></i> Timeline</h6>
+                    <hr>
+                    <small><strong>Created:</strong> {{ startup.created_at.strftime('%d-%b-%Y') }}</small><br>
+                    <small><strong>Last Updated:</strong> {{ startup.updated_at.strftime('%d-%b-%Y %H:%M') }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- No Startup - Conversion Option -->
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-rocket fa-5x text-muted mb-3" style="opacity: 0.3;"></i>
+                    <h4>No Startup Conversion Yet</h4>
+                    <p class="text-muted mb-4">This project hasn't been converted to a startup yet. Once your project is mature enough, you can convert it to a startup for incubation and funding opportunities.</p>
+                    
+                    <a href="/faculty/project/{{ project.project_id }}/convert-startup" class="btn btn-primary btn-lg">
+                        <i class="fas fa-rocket"></i> Convert to Startup
+                    </a>
+                </div>
+            </div>
+
+            <!-- Why Convert? -->
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0"><i class="fas fa-lightbulb"></i> Benefits of Converting to Startup</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-check-circle text-success"></i> Funding Support</h6>
+                            <p class="small text-muted">Access to incubation funds and investment opportunities</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-check-circle text-success"></i> Mentorship</h6>
+                            <p class="small text-muted">Guidance from industry experts and college alumni</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-check-circle text-success"></i> Market Access</h6>
+                            <p class="small text-muted">Resources to commercialize your research</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-check-circle text-success"></i> Visibility</h6>
+                            <p class="small text-muted">Recognition and promotion at institutional level</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+</div>
+
+<!-- Edit Startup Modal -->
+{% if startup %}
+<div class="modal fade" id="editStartupModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Startup Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="/faculty/project/{{ project.project_id }}/startup/update">
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="startup_name" class="form-label">Startup Name</label>
+                            <input type="text" class="form-control" id="startup_name" name="startup_name" 
+                                   value="{{ startup.startup_name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="registration_number" class="form-label">Registration Number</label>
+                            <input type="text" class="form-control" id="registration_number" name="registration_number" 
+                                   value="{{ startup.registration_number or '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="development_status" class="form-label">Development Status</label>
+                            <select class="form-select" id="development_status" name="development_status" required>
+                                <option value="Idea" {% if startup.development_status == 'Idea' %}selected{% endif %}>Idea</option>
+                                <option value="MVP" {% if startup.development_status == 'MVP' %}selected{% endif %}>MVP</option>
+                                <option value="Beta" {% if startup.development_status == 'Beta' %}selected{% endif %}>Beta</option>
+                                <option value="Live" {% if startup.development_status == 'Live' %}selected{% endif %}>Live</option>
+                                <option value="Growth" {% if startup.development_status == 'Growth' %}selected{% endif %}>Growth</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="fund_amount" class="form-label">Funding Raised (₹)</label>
+                            <input type="number" class="form-control" id="fund_amount" name="fund_amount" 
+                                   value="{{ startup.fund_amount }}" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="revenue_generated" class="form-label">Revenue Generated (₹)</label>
+                        <input type="number" class="form-control" id="revenue_generated" name="revenue_generated" 
+                               value="{{ startup.revenue_generated }}" step="0.01" min="0" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Startup</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Bootstrap Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

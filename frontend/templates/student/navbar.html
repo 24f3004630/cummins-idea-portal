@@ -1,0 +1,57 @@
+<!-- Student Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="/student/dashboard">
+            <i class="fas fa-graduation-cap"></i> <strong>Idea Portal - Student</strong>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#studentNavbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="studentNavbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/student/dashboard">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/student/projects">
+                        <i class="fas fa-search"></i> Browse Projects
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/student/my-projects">
+                        <i class="fas fa-folder"></i> My Projects
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/student/applications">
+                        <i class="fas fa-envelope"></i> Applications
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/student/contributions">
+                        <i class="fas fa-trophy"></i> Contributions
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/student/competitions">
+                        <i class="fas fa-medal"></i> My Competitions
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="studentProfileDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle"></i> Profile
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="studentProfileDropdown">
+                        <li><a class="dropdown-item" href="/student/profile"><i class="fas fa-edit"></i> Edit Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/auth/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

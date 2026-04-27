@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-4">My Projects</h2>
+
+{% if projects %}
+<div class="row">
+    {% for project in projects %}
+    <div class="col-md-6 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">{{ project.project_title }}</h5>
+                <p class="card-text">{{ project.domain }} | {{ project.department or 'N/A' }}</p>
+                <p><strong>Status:</strong> <span class="badge bg-info">{{ project.project_status }}</span></p>
+                <p class="text-muted">Approved: {{ 'Yes' if project.is_approved else 'No' }}</p>
+                <a href="/student/project/{{ project.project_id }}" class="btn btn-outline-primary btn-sm">Project details</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-muted">No project memberships found.</p>
+{% endif %}
+
+<a href="/student/dashboard" class="btn btn-secondary mt-3">Back to Dashboard</a>
+{% endblock %}

@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">Admin Dashboard</h2>
+
+<!-- Statistics Cards -->
+<div class="row">
+
+  <div class="col-md-3 mb-3">
+    <div class="card text-center p-3 shadow stat-card">
+      <h5>Total Users</h5>
+      <h3>{{ total_users }}</h3>
+    </div>
+  </div>
+
+  <div class="col-md-3 mb-3">
+    <div class="card text-center p-3 shadow stat-card">
+      <h5>Approved Users</h5>
+      <h3>{{ active_users }}</h3>
+    </div>
+  </div>
+
+  <div class="col-md-3 mb-3">
+    <div class="card text-center p-3 shadow stat-card">
+      <h5>Students</h5>
+      <h3>{{ total_students }}</h3>
+    </div>
+  </div>
+
+  <div class="col-md-3 mb-3">
+    <div class="card text-center p-3 shadow stat-card">
+      <h5>Faculty</h5>
+      <h3>{{ total_faculty }}</h3>
+    </div>
+  </div>
+
+  <div class="col-md-3 mb-3">
+    <div class="card text-center p-3 shadow stat-card">
+      <h5>Projects</h5>
+      <h3>{{ total_projects }}</h3>
+    </div>
+  </div>
+
+  <div class="col-md-3 mb-3">
+    <div class="card text-center p-3 shadow stat-card">
+      <h5>Publications</h5>
+      <h3>{{ total_publications }}</h3>
+    </div>
+  </div>
+
+  <div class="col-md-3 mb-3">
+    <div class="card text-center p-3 shadow stat-card">
+      <h5>IPR Records</h5>
+      <h3>{{ total_iprs }}</h3>
+    </div>
+  </div>
+
+  <div class="col-md-3 mb-3">
+    <div class="card text-center p-3 shadow stat-card">
+      <h5>Startups</h5>
+      <h3>{{ total_startups }}</h3>
+    </div>
+  </div>
+
+</div>
+
+<!-- Analytics Charts Section -->
+<div class="row mt-5">
+  <h3 class="mb-4">Analytics & Insights</h3>
+  
+  <!-- User Distribution Pie Chart -->
+  <div class="col-lg-6 mb-4">
+    <div class="card p-4 shadow">
+      <h5 class="card-title">User Distribution</h5>
+      <div class="chart-container">
+        <canvas id="userChart"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <!-- User Approval Status Doughnut Chart -->
+  <div class="col-lg-6 mb-4">
+    <div class="card p-4 shadow">
+      <h5 class="card-title">User Approval Status</h5>
+      <div class="chart-container">
+        <canvas id="approvalChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Status Bar Chart -->
+  <div class="col-lg-6 mb-4">
+    <div class="card p-4 shadow">
+      <h5 class="card-title">Project Status Distribution</h5>
+      <div class="chart-container">
+        <canvas id="projectChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Publication Status Chart -->
+  <div class="col-lg-6 mb-4">
+    <div class="card p-4 shadow">
+      <h5 class="card-title">Publication Status Breakdown</h5>
+      <div class="chart-container">
+        <canvas id="publicationChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- IPR Grant Status Chart -->
+  <div class="col-lg-6 mb-4">
+    <div class="card p-4 shadow">
+      <h5 class="card-title">IPR Grant Status Distribution</h5>
+      <div class="chart-container">
+        <canvas id="iprChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Projects by Domain Horizontal Bar Chart -->
+  <div class="col-lg-6 mb-4">
+    <div class="card p-4 shadow">
+      <h5 class="card-title">Projects by Domain</h5>
+      <div class="chart-container">
+        <canvas id="domainChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="mt-4 mb-4">
+  <a href="/admin/users" class="btn btn-primary">Manage Users</a>
+  <a href="/admin/projects" class="btn btn-outline-primary">Manage Projects</a>
+  <a href="/admin/pending_faculty" class="btn btn-outline-secondary">Approve Faculty Registrations</a>
+  <a href="/admin/competitions" class="btn btn-outline-primary"><i class="fas fa-trophy"></i> View Competitions</a>
+  <a href="/admin/startups" class="btn btn-outline-secondary"><i class="fas fa-rocket"></i> View Startups</a>
+</div>
+
+<script>
+// Color palettes
+const colors = {
+  primary: ['#1e4f8f', '#3f66a8', '#6f8cc7', '#a7b9de'],
+  accent: ['#5a6d88', '#7c8fa9', '#b0bcd1'],
+  surface: ['#f4f7fb', '#e9eef7', '#d8e1ef']
+};
+
+// User Distribution Pie Chart
+fetch('/admin/api/analytics/users')
+  .then(response => response.json())
+  .then(data => {
+    const ctx = document.getElementById('userChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Students', 'Faculty', 'Admin'],
+        datasets: [{
+          data: [data.students, data.faculty, 1],
+          backgroundColor: colors.primary.slice(0, 3),
+          borderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  });
+
+// User Approval Status Doughnut Chart
+fetch('/admin/api/analytics/users')
+  .then(response => response.json())
+  .then(data => {
+    const ctx = document.getElementById('approvalChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Approved', 'Pending'],
+        datasets: [{
+          data: [data.approved, data.pending],
+          backgroundColor: [colors.primary[0], colors.accent[1]],
+          borderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  });
+
+// Project Status Bar Chart
+fetch('/admin/api/analytics/projects')
+  .then(response => response.json())
+  .then(data => {
+    const labels = ['Proposed', 'Ongoing', 'Completed', 'On Hold'];
+    const counts = [data.proposed, data.ongoing, data.completed, data.on_hold];
+    const ctx = document.getElementById('projectChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Number of Projects',
+          data: counts,
+          backgroundColor: colors.primary.slice(0, labels.length),
+          borderColor: '#34495e',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: true }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              callback: function(value) {
+                return Number.isInteger(value) ? value : '';
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+
+// Publication Status Chart
+fetch('/admin/api/analytics/publications')
+  .then(response => response.json())
+  .then(data => {
+    const labels = ['Submitted', 'Accepted', 'Published', 'Rejected'];
+    const counts = [data.submitted, data.accepted, data.published, data.rejected];
+    const ctx = document.getElementById('publicationChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: counts,
+          backgroundColor: colors.primary.slice(0, labels.length),
+          borderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  });
+
+// IPR Grant Status Chart
+fetch('/admin/api/analytics/iprs')
+  .then(response => response.json())
+  .then(data => {
+    const labels = ['Filed', 'Pending', 'Granted', 'Rejected'];
+    const counts = [data.filed, data.pending, data.granted, data.rejected];
+    const ctx = document.getElementById('iprChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Number of IPRs',
+          data: counts,
+          backgroundColor: colors.primary.slice(0, labels.length),
+          borderColor: '#34495e',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              callback: function(value) {
+                return Number.isInteger(value) ? value : '';
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+
+// Projects by Domain Horizontal Bar Chart
+fetch('/admin/api/analytics/domains')
+  .then(response => response.json())
+  .then(data => {
+    const ctx = document.getElementById('domainChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.domains,
+        datasets: [{
+          label: 'Number of Projects',
+          data: data.counts,
+          backgroundColor: colors.primary,
+          borderColor: '#34495e',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              callback: function(value) {
+                return Number.isInteger(value) ? value : '';
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+</script>
+
+{% endblock %}

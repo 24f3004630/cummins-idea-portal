@@ -1,0 +1,72 @@
+<!-- Admin Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="/admin/dashboard">
+            <i class="fas fa-shield-alt"></i> <strong>Idea Portal - Admin</strong>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="adminNavbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/dashboard">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/users">
+                        <i class="fas fa-users"></i> Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/projects">
+                        <i class="fas fa-folder"></i> Projects
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/publications">
+                        <i class="fas fa-book"></i> Publications
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/iprs">
+                        <i class="fas fa-certificate"></i> IPRs/Patents
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/startups">
+                        <i class="fas fa-rocket"></i> Startups
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/competitions">
+                        <i class="fas fa-trophy"></i> Competitions
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/projects/pending-approval">
+                        <i class="fas fa-hourglass-half"></i> <span class="badge bg-warning">Approvals</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/accreditation" style="background: rgba(255,255,255,0.1); border-radius: 4px;">
+                        <i class="fas fa-clipboard-list"></i> <strong>📊 Accreditation</strong>
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="adminProfileDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle"></i> Admin
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminProfileDropdown">
+                        <li><a class="dropdown-item" href="/admin/profile"><i class="fas fa-user-edit"></i> Edit Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/auth/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

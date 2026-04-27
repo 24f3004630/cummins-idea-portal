@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="mb-4">
+    <h2>{{ project.project_title }} - Project Lifecycle</h2>
+    <p class="text-muted">
+        <a href="/admin/projects" class="text-decoration-none">Projects</a> > 
+        <span>{{ project.project_title }}</span>
+    </p>
+</div>
+
+<!-- Project Status Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-project-diagram fa-3x text-primary mb-3"></i>
+                <h6 class="card-title">Project Status</h6>
+                <p class="mb-0">
+                    <span class="badge badge-{{ project.project_status|lower|replace(' ', '') }}">
+                        {{ project.project_status }}
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-book fa-3x text-info mb-3"></i>
+                <h6 class="card-title">Publications</h6>
+                <p class="mb-0"><strong>{{ publications|length }}</strong></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-certificate fa-3x text-warning mb-3"></i>
+                <h6 class="card-title">IPRs/Patents</h6>
+                <p class="mb-0"><strong>{{ iprs|length }}</strong></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-rocket fa-3x text-success mb-3"></i>
+                <h6 class="card-title">Startup</h6>
+                <p class="mb-0">
+                    {% if startup %}
+                        <span class="badge bg-success">Converted</span>
+                    {% else %}
+                        <span class="badge bg-secondary">None</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Project Information Column -->
+    <div class="col-md-3">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h6 class="mb-0"><i class="fas fa-info-circle"></i> Project Details</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Title:</strong></p>
+                <p class="mb-3">{{ project.project_title }}</p>
+                
+                <p><strong>Faculty:</strong></p>
+                <p class="mb-3">{{ faculty.name }}<br><small class="text-muted">{{ faculty.email }}</small></p>
+                
+                <p><strong>Domain:</strong></p>
+                <p class="mb-3"><span class="badge bg-secondary">{{ project.domain }}</span></p>
+                
+                <p><strong>Department:</strong></p>
+                <p class="mb-3">{{ project.department or 'N/A' }}</p>
+                
+                <p><strong>Created:</strong></p>
+                <p class="mb-3">{{ project.created_at.strftime('%d-%b-%Y') if project.created_at else 'N/A' }}</p>
+                
+                <p><strong>Approval Status:</strong></p>
+                <p class="mb-0">
+                    {% if project.is_approved %}
+                        <span class="badge bg-success">Approved</span>
+                    {% else %}
+                        <span class="badge bg-warning">Pending</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="fas fa-users"></i> Team Members</h6>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted mb-3">Total: <strong>{{ team_members|length }}</strong></p>
+                {% if team_members %}
+                    <div class="list-group list-group-flush">
+                        {% for member, person in team_members %}
+                        <div class="list-group-item px-0 py-2 border-0">
+                            <small><strong>{{ person.name }}</strong></small><br>
+                            <small class="text-muted">{{ person.email }}</small><br>
+                            <small class="badge bg-info">{{ member.role }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted small">No team members</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Publications Column -->
+    <div class="col-md-3">
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="fas fa-book"></i> Publications ({{ publications|length }})</h6>
+            </div>
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                {% if publications %}
+                    <div class="list-group list-group-flush">
+                        {% for pub in publications %}
+                        <div class="list-group-item px-0 py-2 border-0">
+                            <small><strong>{{ pub.title[:30] }}...</strong></small><br>
+                            <small class="text-muted">{{ pub.venue }} ({{ pub.year_of_publication }})</small><br>
+                            <small class="badge" style="background-color: #17a2b8;">
+                                {{ pub.publication_type }}
+                            </small>
+                            <small class="badge bg-secondary">{{ pub.status }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted small">No publications yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- IPRs Column -->
+    <div class="col-md-3">
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0"><i class="fas fa-certificate"></i> IPRs/Patents ({{ iprs|length }})</h6>
+            </div>
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                {% if iprs %}
+                    <div class="list-group list-group-flush">
+                        {% for ipr in iprs %}
+                        <div class="list-group-item px-0 py-2 border-0">
+                            <small><strong>{{ ipr.innovation_title[:25] }}...</strong></small><br>
+                            <small class="text-muted">App #: {{ ipr.application_number or 'N/A' }}</small><br>
+                            <small class="badge bg-secondary">{{ ipr.ipr_type }}</small>
+                            <small class="badge badge-{{ ipr.grant_status|lower }}">
+                                {{ ipr.grant_status }}
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted small">No IPRs yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Startup Column -->
+    <div class="col-md-3">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="fas fa-rocket"></i> Startup Conversion</h6>
+            </div>
+            <div class="card-body">
+                {% if startup %}
+                    <p><strong>{{ startup.startup_name }}</strong></p>
+                    <hr class="my-2">
+                    
+                    <p class="mb-1"><small><strong>Stage:</strong></small></p>
+                    <p class="mb-2"><span class="badge bg-success">{{ startup.development_status }}</span></p>
+                    
+                    <p class="mb-1"><small><strong>Registration #:</strong></small></p>
+                    <p class="mb-2"><small>{{ startup.registration_number or 'N/A' }}</small></p>
+                    
+                    <p class="mb-1"><small><strong>Fund Amount:</strong></small></p>
+                    <p class="mb-2"><small>₹{{ startup.fund_amount or '0' }}</small></p>
+                    
+                    <p class="mb-1"><small><strong>Revenue Generated:</strong></small></p>
+                    <p class="mb-0"><small>₹{{ startup.revenue_generated or '0' }}</small></p>
+                {% else %}
+                    <p class="text-muted text-center py-4">
+                        <i class="fas fa-times fa-2x"></i><br>
+                        Not converted to startup yet
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Back Button -->
+<div class="mt-4">
+    <a href="/admin/projects" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Projects
+    </a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3>Explore Research Projects</h3>
+        <hr>
+    </div>
+</div>
+
+<!-- Search Filters -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <form method="GET" class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="domain" class="form-label">Domain</label>
+                        <input type="text" class="form-control" id="domain" name="domain" 
+                               placeholder="e.g., AI, IoT, Blockchain" value="{{ domain_filter }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="faculty" class="form-label">Faculty</label>
+                        <input type="text" class="form-control" id="faculty" name="faculty" 
+                               placeholder="Faculty name" value="{{ faculty_filter }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="Ongoing" {% if status_filter == 'Ongoing' %}selected{% endif %}>Ongoing</option>
+                            <option value="Completed" {% if status_filter == 'Completed' %}selected{% endif %}>Completed</option>
+                            <option value="On Hold" {% if status_filter == 'On Hold' %}selected{% endif %}>On Hold</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <a href="/student/projects" class="btn btn-secondary">Reset</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Projects Grid -->
+{% if projects %}
+<div class="row">
+    {% for project in projects %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">{{ project.project_title }}</h5>
+                <p class="card-text text-muted">{{ project.project_description[:100] }}...</p>
+                
+                <div class="mb-3">
+                    <span class="badge bg-primary">{{ project.domain }}</span>
+                    {% if project.project_status == 'Ongoing' %}
+                        <span class="badge bg-success">{{ project.project_status }}</span>
+                    {% elif project.project_status == 'Completed' %}
+                        <span class="badge bg-info">Completed</span>
+                    {% else %}
+                        <span class="badge bg-warning">{{ project.project_status }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <p class="small mb-1"><strong>Faculty:</strong> {{ project_faculty[project.project_id].name }}</p>
+                    <p class="small mb-1"><strong>Team Size:</strong> {{ project.team_size }}</p>
+                    <p class="small mb-0"><strong>Required Skills:</strong> {{ project.required_skills or 'N/A' }}</p>
+                </div>
+            </div>
+            <div class="card-footer bg-light">
+                <a href="/student/project/{{ project.project_id }}" class="btn btn-sm btn-primary">View Details</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    <h5>No projects found matching your search criteria</h5>
+    <p>Try adjusting your filters or <a href="/student/projects">clear the search</a></p>
+</div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <a href="/student/dashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+{% endblock %}

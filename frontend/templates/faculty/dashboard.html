@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Statistics Cards -->
+<div class="row">
+    <div class="col-md-3">
+        <div class="card bg-light mb-3 stat-card border border-1">
+            <div class="card-body">
+                <h5 class="card-title text-primary">Total Projects</h5>
+                <p class="card-text fs-4">{{ total_projects }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light mb-3 stat-card border border-1">
+            <div class="card-body">
+                <h5 class="card-title text-primary">Ongoing Projects</h5>
+                <p class="card-text fs-4">{{ ongoing_projects }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light mb-3 stat-card border border-1">
+            <div class="card-body">
+                <h5 class="card-title text-primary">Completed Projects</h5>
+                <p class="card-text fs-4">{{ completed_projects }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light mb-3 stat-card border border-1">
+            <div class="card-body">
+                <h5 class="card-title text-primary">Startup Conversions</h5>
+                <p class="card-text fs-4">{{ startup_conversions }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics Charts Section -->
+<div class="row mt-5 mb-4">
+    <h3 class="mb-4">Academic Analytics</h3>
+    
+    <!-- Project Status Distribution -->
+    <div class="col-lg-6 mb-4">
+        <div class="card p-4 shadow">
+            <h5 class="card-title">Project Status Distribution</h5>
+            <div class="chart-container">
+                <canvas id="projectChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Publication Status -->
+    <div class="col-lg-6 mb-4">
+        <div class="card p-4 shadow">
+            <h5 class="card-title">Publication Lifecycle</h5>
+            <div class="chart-container">
+                <canvas id="publicationChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- IPR Grant Status -->
+    <div class="col-lg-6 mb-4">
+        <div class="card p-4 shadow">
+            <h5 class="card-title">IPR Grant Status Distribution</h5>
+            <div class="chart-container">
+                <canvas id="iprChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Size by Project -->
+    <div class="col-lg-6 mb-4">
+        <div class="card p-4 shadow">
+            <h5 class="card-title">Team Size by Project</h5>
+            <div class="chart-container">
+                <canvas id="teamChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4>My Research Projects</h4>
+            <a href="/faculty/project/create" class="btn btn-primary">+ New Project</a>
+        </div>
+        
+        <div class="mb-3">
+            <a href="/faculty/competitions" class="btn btn-outline-primary btn-sm"><i class="fas fa-trophy"></i> View All Competitions</a>
+        </div>
+        
+        {% if projects %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Project Title</th>
+                        <th>Domain</th>
+                        <th>Status</th>
+                        <th>Team Size</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in projects %}
+                    <tr>
+                        <td>
+                            <a href="/faculty/project/{{ project.project_id }}" class="text-decoration-none">
+                                {{ project.project_title }}
+                            </a>
+                        </td>
+                        <td>{{ project.domain or 'N/A' }}</td>
+                        <td>
+                            {% if project.project_status == 'Ongoing' %}
+                                <span class="badge bg-primary text-white">{{ project.project_status }}</span>
+                            {% elif project.project_status == 'Completed' %}
+                                <span class="badge bg-secondary text-white">{{ project.project_status }}</span>
+                            {% else %}
+                                <span class="badge bg-light text-dark">{{ project.project_status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ project.team_size or '0' }}</td>
+                        <td>
+                            <a href="/faculty/project/{{ project.project_id }}" class="btn btn-sm btn-outline-primary">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            No projects yet. <a href="/faculty/project/create">Create your first project</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <h5>Recent Publications</h5>
+        {% if publications %}
+        <div class="list-group">
+            {% for pub in publications %}
+            <div class="list-group-item">
+                <h6 class="mb-1">{{ pub.title }}</h6>
+                <p class="mb-1 text-muted small">{{ pub.publication_type }} - {{ pub.venue }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">No publications yet</p>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-6">
+        <h5>IPR/Patents</h5>
+        {% if iprs %}
+        <div class="list-group">
+            {% for ipr in iprs %}
+            <div class="list-group-item">
+                <h6 class="mb-1">{{ ipr.innovation_title }}</h6>
+                <p class="mb-1 text-muted small">{{ ipr.ipr_type }} - {{ ipr.grant_status }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">No IPR/Patents yet</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+const colors = {
+  primary: ['#1e4f8f', '#3764a4', '#5f80b8', '#92a8d6'],
+  accent: ['#5a6d88', '#7d8faa', '#b0bed3'],
+  surface: ['#f4f7fb', '#e8eef6', '#d9e1eb']
+};
+
+// Project Status Distribution
+fetch('/faculty/api/analytics/projects')
+  .then(response => response.json())
+  .then(data => {
+    const ctx = document.getElementById('projectChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: data.statuses,
+        datasets: [{
+          data: data.counts,
+          backgroundColor: colors.primary.slice(0, data.statuses.length),
+          borderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  });
+
+// Publication Status
+fetch('/faculty/api/analytics/publications')
+  .then(response => response.json())
+  .then(data => {
+    const ctx = document.getElementById('publicationChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.statuses,
+        datasets: [{
+          label: 'Publications',
+          data: data.counts,
+          backgroundColor: colors.primary.slice(0, data.statuses.length),
+          borderColor: '#34495e',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              callback: function(value) {
+                return Number.isInteger(value) ? value : '';
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+
+// IPR Grant Status
+fetch('/faculty/api/analytics/iprs')
+  .then(response => response.json())
+  .then(data => {
+    const ctx = document.getElementById('iprChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: data.statuses,
+        datasets: [{
+          data: data.counts,
+          backgroundColor: colors.primary,
+          borderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  });
+
+// Team Size by Project
+fetch('/faculty/api/analytics/team')
+  .then(response => response.json())
+  .then(data => {
+    const ctx = document.getElementById('teamChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.projects,
+        datasets: [{
+          label: 'Team Members',
+          data: data.team_sizes,
+          backgroundColor: colors.primary[0],
+          borderColor: '#34495e',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              callback: function(value) {
+                return Number.isInteger(value) ? value : '';
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+</script>
+
+{% endblock %}

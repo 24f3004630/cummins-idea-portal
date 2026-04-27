@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Go to Top Button -->
+<button id="goToTopBtn" class="btn btn-primary" style="position: fixed; bottom: 30px; right: 30px; display: none; z-index: 99; border-radius: 50%; width: 50px; height: 50px; padding: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);" title="Go to top">
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        {% if all_faculty_competitions %}
+            <h2><i class="fas fa-trophy"></i> All My Competitions</h2>
+        {% else %}
+            <h2><i class="fas fa-trophy"></i> Project Competitions</h2>
+        {% endif %}
+        <div class="btn-group">
+            <button id="backBtn" class="btn btn-secondary" title="Go back to previous page">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            {% if project %}
+            <a href="/faculty/project/{{ project.project_id }}" class="btn btn-outline-secondary">
+                <i class="fas fa-home"></i> Project
+            </a>
+            {% else %}
+            <a href="/faculty/dashboard" class="btn btn-outline-secondary">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if project %}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <p class="text-muted"><strong>Project:</strong> {{ project.project_title }}</p>
+            <hr>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if all_faculty_competitions and show_both_types %}
+    <div>
+        {% set project_comps = competitions|selectattr('type', 'equalto', 'project')|list %}
+        {% set student_comps = competitions|selectattr('type', 'equalto', 'student')|list %}
+        
+        {% if project_comps or student_comps %}
+            <!-- Project Competitions Section -->
+            {% if project_comps %}
+            <div class="mb-5">
+                <h4 class="mb-3"><i class="fas fa-project-diagram"></i> Project Competitions (Faculty Led)</h4>
+                <div class="row">
+                    {% for comp_item in project_comps %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <!-- Card Header -->
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-trophy"></i> {{ comp_item.competition.name }}
+                                </h5>
+                            </div>
+
+                            <!-- Card Body -->
+                            <div class="card-body">
+                                <!-- Project -->
+                                <div class="mb-3 pb-3 border-bottom">
+                                    <strong><i class="fas fa-project-diagram"></i> Project</strong>
+                                    <p class="text-muted mb-0">
+                                        <a href="/faculty/project/{{ comp_item.project.project_id }}" class="text-decoration-none">
+                                            {{ comp_item.project.project_title }}
+                                        </a>
+                                    </p>
+                                </div>
+
+                                <!-- Competition Details -->
+                                <div class="mb-3 pb-3 border-bottom">
+                                    <strong><i class="fas fa-award"></i> Competition</strong>
+                                    <p class="text-muted mb-0">{{ comp_item.competition.name }}</p>
+                                </div>
+
+                                <!-- Venue -->
+                                {% if comp_item.competition.venue %}
+                                <div class="mb-3 pb-3 border-bottom">
+                                    <strong><i class="fas fa-map-marker-alt"></i> Venue</strong>
+                                    <p class="text-muted mb-0">{{ comp_item.competition.venue }}</p>
+                                </div>
+                                {% endif %}
+
+                                <!-- Team Name -->
+                                {% if comp_item.project_competition.team_name %}
+                                <div class="mb-3 pb-3 border-bottom">
+                                    <strong><i class="fas fa-users"></i> Team Name</strong>
+                                    <p class="text-muted mb-0">{{ comp_item.project_competition.team_name }}</p>
+                                </div>
+                                {% endif %}
+
+                                <!-- Prize Money -->
+                                <div class="mb-3">
+                                    <strong><i class="fas fa-medal"></i> Prize Money</strong>
+                                    <p class="text-success fw-bold mb-0">
+                                        ₹ {{ "%.2f"|format(comp_item.project_competition.prize_money_received or 0) }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Student Competitions Section (Mentored) -->
+            {% if student_comps %}
+            <div class="mb-5">
+                <h4 class="mb-3"><i class="fas fa-medal"></i> Student Competitions (You Mentored)</h4>
+                <div class="row">
+                    {% for comp_item in student_comps %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <!-- Card Header -->
+                            <div class="card-header" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-trophy"></i> {{ comp_item.competition.name }}
+                                </h5>
+                            </div>
+
+                            <!-- Card Body -->
+                            <div class="card-body">
+                                <!-- Student Name -->
+                                <div class="mb-3 pb-3 border-bottom">
+                                    <strong><i class="fas fa-user-graduate"></i> Student</strong>
+                                    <p class="text-muted mb-0">{{ comp_item.student.name }}</p>
+                                </div>
+
+                                <!-- Competition Details -->
+                                <div class="mb-3 pb-3 border-bottom">
+                                    <strong><i class="fas fa-award"></i> Competition</strong>
+                                    <p class="text-muted mb-0">{{ comp_item.competition.name }}</p>
+                                </div>
+
+                                <!-- Venue -->
+                                {% if comp_item.competition.venue %}
+                                <div class="mb-3 pb-3 border-bottom">
+                                    <strong><i class="fas fa-map-marker-alt"></i> Venue</strong>
+                                    <p class="text-muted mb-0">{{ comp_item.competition.venue }}</p>
+                                </div>
+                                {% endif %}
+
+                                <!-- Organized By -->
+                                {% if comp_item.competition.organized_by %}
+                                <div class="mb-3 pb-3 border-bottom">
+                                    <strong><i class="fas fa-building"></i> Organizer</strong>
+                                    <p class="text-muted mb-0">{{ comp_item.competition.organized_by }}</p>
+                                </div>
+                                {% endif %}
+
+                                <!-- Team Name -->
+                                {% if comp_item.student_competition.team_name %}
+                                <div class="mb-3 pb-3 border-bottom">
+                                    <strong><i class="fas fa-users"></i> Team</strong>
+                                    <p class="text-muted mb-0">{{ comp_item.student_competition.team_name }}</p>
+                                </div>
+                                {% endif %}
+
+                                <!-- Prize Money -->
+                                <div class="mb-3 pb-3 border-bottom">
+                                    <strong><i class="fas fa-medal"></i> Prize Won</strong>
+                                    <p class="text-success fw-bold mb-0">
+                                        ₹ {{ "%.2f"|format(comp_item.student_competition.prize_money or 0) }}
+                                    </p>
+                                </div>
+
+                                <!-- Status -->
+                                <div>
+                                    {% if comp_item.student_competition.prize_money and comp_item.student_competition.prize_money > 0 %}
+                                        <span class="badge bg-success"><i class="fas fa-check-circle"></i> Won</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary"><i class="fas fa-hourglass"></i> Participated</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+            <!-- Empty State -->
+            <div class="alert alert-info text-center py-5" role="alert">
+                <i class="fas fa-trophy fa-3x mb-3 text-muted" style="display: block;"></i>
+                <h4>No Competitions Yet</h4>
+                <p class="text-muted mb-3">You haven't added any competitions yet, and your students haven't submitted any.</p>
+                <a href="/faculty/projects" class="btn btn-primary">
+                    <i class="fas fa-folder"></i> View Your Projects
+                </a>
+            </div>
+        {% endif %}
+    </div>
+    {% elif competitions %}
+        <div class="row">
+            {% for item in project_competitions %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <!-- Card Header -->
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-trophy"></i> {{ item.competition.name }}
+                        </h5>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body">
+                        <!-- Project Name (only when viewing all competitions) -->
+                        {% if all_faculty_competitions %}
+                        <div class="mb-3 pb-3 border-bottom">
+                            <strong><i class="fas fa-project-diagram"></i> Project:</strong>
+                            <p class="text-muted mb-0">
+                                <a href="/faculty/project/{{ item.project.project_id }}" class="text-decoration-none">
+                                    {{ item.project.project_title }}
+                                </a>
+                            </p>
+                        </div>
+                        {% endif %}
+
+                        <!-- Competition Name -->
+                        <div class="mb-3">
+                            <strong>Competition:</strong>
+                            <p class="text-muted">{{ item.competition.name }}</p>
+                        </div>
+
+                        <!-- Venue -->
+                        {% if item.competition.venue %}
+                        <div class="mb-3">
+                            <strong><i class="fas fa-map-marker-alt"></i> Venue:</strong>
+                            <p class="text-muted">{{ item.competition.venue }}</p>
+                        </div>
+                        {% endif %}
+
+                        <!-- Organized By -->
+                        {% if item.competition.organized_by %}
+                        <div class="mb-3">
+                            <strong><i class="fas fa-building"></i> Organized By:</strong>
+                            <p class="text-muted">{{ item.competition.organized_by }}</p>
+                        </div>
+                        {% endif %}
+
+                        <!-- Competition Dates -->
+                        <div class="mb-3">
+                            <strong><i class="fas fa-calendar-alt"></i> Dates:</strong>
+                            <p class="text-muted">
+                                {% if item.competition.start_date_of_competition %}
+                                    <span class="badge bg-info">Start: {{ item.competition.start_date_of_competition.strftime('%d-%b-%Y') }}</span>
+                                {% endif %}
+                                {% if item.competition.end_date_of_competition %}
+                                    <span class="badge bg-warning text-dark">End: {{ item.competition.end_date_of_competition.strftime('%d-%b-%Y') }}</span>
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <!-- Team Name -->
+                        {% if item.project_competition.team_name %}
+                        <div class="mb-3">
+                            <strong><i class="fas fa-users"></i> Team Name:</strong>
+                            <p class="text-muted">{{ item.project_competition.team_name }}</p>
+                        </div>
+                        {% endif %}
+
+                        <!-- Prize Money -->
+                        <div class="mb-3">
+                            <strong><i class="fas fa-medal"></i> Prize Money:</strong>
+                            <p class="text-success fw-bold">
+                                ₹ {{ "%.2f"|format(item.project_competition.prize_money_received or 0) }}
+                            </p>
+                        </div>
+
+                        <!-- Status Badge -->
+                        <div class="mb-3">
+                            {% if item.project_competition.prize_money_received and item.project_competition.prize_money_received > 0 %}
+                                <span class="badge bg-success"><i class="fas fa-check-circle"></i> Won</span>
+                            {% else %}
+                                <span class="badge bg-secondary"><i class="fas fa-hourglass"></i> Participated</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Card Footer -->
+                    <div class="card-footer bg-light">
+                        <div class="btn-group btn-group-sm w-100" role="group">
+                            <a href="#" class="btn btn-outline-warning" title="Edit" data-bs-toggle="modal" data-bs-target="#editModal{{ item.project_competition.competition_id }}">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="#" class="btn btn-outline-danger" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteModal{{ item.project_competition.competition_id }}">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Add Competition Button -->
+        {% if project %}
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <a href="/faculty/project/{{ project.project_id }}/add-competition" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus"></i> Add Competition
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    {% else %}
+        <!-- Empty State -->
+        <div class="alert alert-info text-center py-5" role="alert">
+            <i class="fas fa-trophy fa-3x mb-3 text-muted" style="display: block;"></i>
+            {% if all_faculty_competitions %}
+                <h4>No Competitions Yet</h4>
+                <p class="text-muted mb-3">You haven't added any competitions for your projects yet.</p>
+                <a href="/faculty/projects" class="btn btn-primary">
+                    <i class="fas fa-folder"></i> View Projects
+                </a>
+            {% else %}
+                <h4>No Competitions Added Yet</h4>
+                <p class="text-muted mb-3">This project hasn't participated in any competitions yet.</p>
+                <a href="/faculty/project/{{ project.project_id }}/add-competition" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Competition
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+<!-- Bootstrap Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Go to Top Button Functionality
+const goToTopBtn = document.getElementById('goToTopBtn');
+
+window.addEventListener('scroll', () => {
+    if (window.pageYOffset > 300) {
+        goToTopBtn.style.display = 'block';
+        goToTopBtn.style.animation = 'fadeIn 0.3s';
+    } else {
+        goToTopBtn.style.display = 'none';
+    }
+});
+
+goToTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// Back Button Functionality
+const backBtn = document.getElementById('backBtn');
+backBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (document.referrer) {
+        window.history.back();
+    } else {
+        window.location.href = '/faculty/dashboard';
+    }
+});
+
+// Fade-in animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeOut {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(10px); }
+    }
+    #goToTopBtn:hover {
+        transform: scale(1.1);
+        transition: transform 0.2s;
+    }
+`;
+document.head.appendChild(style);
+</script>
+
+{% endblock %}

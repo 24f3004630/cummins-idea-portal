@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4"><i class="fas fa-book"></i> Publications Monitoring</h2>
+
+<!-- Status Filter Tabs -->
+<ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all-pubs" type="button" role="tab">
+            All <span class="badge bg-secondary ms-2">{{ pub_data|length }}</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="submitted-tab" data-bs-toggle="tab" data-bs-target="#submitted-pubs" type="button" role="tab">
+            Submitted <span class="badge bg-warning ms-2">
+                {%- set count = pub_data|selectattr('publication.status', 'equalto', 'Submitted')|list|length -%}
+                {{ count }}
+            </span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="accepted-tab" data-bs-toggle="tab" data-bs-target="#accepted-pubs" type="button" role="tab">
+            Accepted <span class="badge bg-info ms-2">
+                {%- set count = pub_data|selectattr('publication.status', 'equalto', 'Accepted')|list|length -%}
+                {{ count }}
+            </span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="published-tab" data-bs-toggle="tab" data-bs-target="#published-pubs" type="button" role="tab">
+            Published <span class="badge bg-success ms-2">
+                {%- set count = pub_data|selectattr('publication.status', 'equalto', 'Published')|list|length -%}
+                {{ count }}
+            </span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="rejected-tab" data-bs-toggle="tab" data-bs-target="#rejected-pubs" type="button" role="tab">
+            Rejected <span class="badge bg-danger ms-2">
+                {%- set count = pub_data|selectattr('publication.status', 'equalto', 'Rejected')|list|length -%}
+                {{ count }}
+            </span>
+        </button>
+    </li>
+</ul>
+
+<!-- Tab Content -->
+<div class="tab-content">
+    {% macro publication_table(publications) %}
+        {% if publications %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Publication Title</th>
+                            <th>Project</th>
+                            <th>Faculty</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Year</th>
+                            <th>Venue</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in publications %}
+                        <tr>
+                            <td>{{ item.publication.title[:40] }}...</td>
+                            <td>
+                                {% if item.project %}
+                                    <a href="/admin/project/{{ item.project.project_id }}/lifecycle" class="text-decoration-none">
+                                        {{ item.project.project_title[:30] }}...
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ item.faculty.name if item.faculty else 'N/A' }}</td>
+                            <td><span class="badge bg-secondary">{{ item.publication.publication_type }}</span></td>
+                            <td>
+                                {% if item.publication.status == 'Published' %}
+                                    <span class="badge bg-success">{{ item.publication.status }}</span>
+                                {% elif item.publication.status == 'Accepted' %}
+                                    <span class="badge bg-info">{{ item.publication.status }}</span>
+                                {% elif item.publication.status == 'Submitted' %}
+                                    <span class="badge bg-warning text-dark">{{ item.publication.status }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ item.publication.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ item.publication.year_of_publication or 'N/A' }}</td>
+                            <td>{{ item.publication.venue or 'N/A' }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#pubModal{{ item.publication.publication_id }}">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center py-5">
+                <i class="fas fa-info-circle fa-2x mb-3"></i>
+                <p>No publications found</p>
+            </div>
+        {% endif %}
+    {% endmacro %}
+    
+    <!-- All Tab -->
+    <div class="tab-pane fade show active" id="all-pubs" role="tabpanel">
+        {{ publication_table(pub_data) }}
+    </div>
+    
+    <!-- Submitted Tab -->
+    <div class="tab-pane fade" id="submitted-pubs" role="tabpanel">
+        {{ publication_table(pub_data|selectattr('publication.status', 'equalto', 'Submitted')|list) }}
+    </div>
+    
+    <!-- Accepted Tab -->
+    <div class="tab-pane fade" id="accepted-pubs" role="tabpanel">
+        {{ publication_table(pub_data|selectattr('publication.status', 'equalto', 'Accepted')|list) }}
+    </div>
+    
+    <!-- Published Tab -->
+    <div class="tab-pane fade" id="published-pubs" role="tabpanel">
+        {{ publication_table(pub_data|selectattr('publication.status', 'equalto', 'Published')|list) }}
+    </div>
+    
+    <!-- Rejected Tab -->
+    <div class="tab-pane fade" id="rejected-pubs" role="tabpanel">
+        {{ publication_table(pub_data|selectattr('publication.status', 'equalto', 'Rejected')|list) }}
+    </div>
+</div>
+
+{% endblock %}

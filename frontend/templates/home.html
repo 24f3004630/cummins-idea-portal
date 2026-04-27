@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MKSSS Cummins College - Research Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0B3D91;
+            --accent-gold: #D4AF37;
+            --light-blue: #4A90E2;
+            --success-color: #28A745;
+            --dark-text: #1A1A1A;
+            --light-gray: #F5F7FA;
+        }
+        
+        * {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            color: var(--dark-text);
+            overflow-x: hidden;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #052847 100%);
+            box-shadow: 0 2px 15px rgba(11, 61, 145, 0.2);
+            padding: 15px 0;
+        }
+        
+        /* Navbar Brand Styling */
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white !important;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .navbar-brand:hover {
+            opacity: 0.9;
+        }
+        
+        .navbar-logo {
+            height: 55px;
+            width: auto;
+            display: block;
+            flex-shrink: 0;
+        }
+        
+        .navbar-brand .brand-text {
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+        }
+        
+        .navbar-dark .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            transition: 0.3s ease;
+            font-weight: 500;
+            margin-left: 5px;
+        }
+        
+        .navbar-dark .navbar-nav .nav-link:hover {
+            color: var(--accent-gold) !important;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #052847 100%);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-logo {
+            margin-bottom: 30px;
+        }
+        
+        .hero-logo img {
+            max-width: 150px;
+            height: auto;
+            filter: brightness(0) invert(1);
+            animation: slideDown 0.8s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .hero .college-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+        }
+        
+        .hero .tagline {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-custom {
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        /* Departments Section */
+        .departments {
+            padding: 80px 20px;
+            background: white;
+        }
+        
+        .departments h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 50px;
+            text-align: center;
+        }
+        
+        .departments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .dept-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--light-blue) 100%);
+            color: white;
+            padding: 40px 25px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(11, 61, 145, 0.15);
+        }
+        
+        .dept-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(11, 61, 145, 0.25);
+        }
+        
+        .dept-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--accent-gold);
+        }
+        
+        .dept-card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .dept-card p {
+            font-size: 0.95rem;
+            opacity: 0.95;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 80px 20px;
+            background: var(--light-gray);
+        }
+        
+        .features h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 50px;
+            text-align: center;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 35px 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-top: 4px solid var(--light-blue);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(11, 61, 145, 0.15);
+            border-top-color: var(--accent-gold);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .feature-card h3 {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+        
+        .feature-card p {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #052847 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+        
+        .cta h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .cta p {
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Footer */
+        footer {
+            background: #1A1A1A;
+            color: white;
+            padding: 40px 20px 20px;
+            text-align: center;
+        }
+        
+        footer p {
+            margin: 8px 0;
+            font-size: 0.95rem;
+        }
+        
+        footer .college-info {
+            color: var(--accent-gold);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        
+        footer a {
+            color: var(--light-blue);
+            text-decoration: none;
+            transition: 0.3s ease;
+        }
+        
+        footer a:hover {
+            color: var(--accent-gold);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar-logo {
+                height: 45px;
+            }
+            
+            .navbar-brand {
+                font-size: 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .departments h2,
+            .features h2 {
+                font-size: 2rem;
+            }
+            
+            .cta h2 {
+                font-size: 1.8rem;
+            }
+            
+            .hero-buttons,
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-custom {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .navbar-logo {
+                height: 40px;
+            }
+            
+            .navbar-brand {
+                gap: 8px;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img class="navbar-logo" src="https://cumminscollege.org/wp-content/uploads/2024/06/mksss-cummins-college-of-engineering-logo.png" alt="Cummins College Logo">
+                <span class="brand-text">CCEW Portal</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#departments">Departments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auth/login"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-logo">
+                <img src="https://cumminscollege.org/wp-content/uploads/2024/06/mksss-cummins-college-of-engineering-logo.png" alt="MKSSS Cummins College">
+            </div>
+            <h1>Research & Innovation Portal</h1>
+            <div class="college-name">MKSSS's Cummins College of Engineering for Women, Pune</div>
+            <p class="tagline">Nurturing Research Excellence, Innovation, and Engineering Leadership</p>
+            <div class="hero-buttons">
+                <a href="/auth/login" class="btn btn-custom" style="background-color: var(--accent-gold); color: var(--primary-color); border: none;">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="/auth/register/student" class="btn btn-custom" style="background-color: white; color: var(--primary-color); border: none;">
+                    <i class="fas fa-user-graduate"></i> Student Register
+                </a>
+                <a href="/auth/register/faculty" class="btn btn-custom" style="background-color: rgba(255,255,255,0.15); color: white; border: 2px solid white;">
+                    <i class="fas fa-chalkboard-user"></i> Faculty Register
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Departments Section -->
+    <section class="departments" id="departments">
+        <div class="container-fluid">
+            <h2>Our Departments</h2>
+            <div class="departments-grid">
+                <div class="dept-card">
+                    <div class="dept-icon">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <h3>Computer Engineering</h3>
+                    <p>Advanced computing, software systems, and computer architecture research</p>
+                </div>
+                <div class="dept-card">
+                    <div class="dept-icon">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <h3>Information Technology</h3>
+                    <p>IT solutions, network systems, and digital innovation projects</p>
+                </div>
+                <div class="dept-card">
+                    <div class="dept-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3>Mechanical Engineering</h3>
+                    <p>Mechanical systems, design, and advanced manufacturing research</p>
+                </div>
+                <div class="dept-card">
+                    <div class="dept-icon">
+                        <i class="fas fa-microchip-alt"></i>
+                    </div>
+                    <h3>Instrumentation Engineering</h3>
+                    <p>Sensors, measurement systems, and control engineering solutions</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container-fluid">
+            <h2>Portal Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h3>Research Projects</h3>
+                    <p>Create and manage research projects with faculty guidance and peer collaboration</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3>Publications</h3>
+                    <p>Track research papers, journals, and conference publications</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h3>IPR & Patents</h3>
+                    <p>Manage intellectual property rights and patent filings</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Startups</h3>
+                    <p>Convert innovative ideas into entrepreneurial ventures</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Analytics</h3>
+                    <p>Get insights into research output and innovation metrics</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Collaboration</h3>
+                    <p>Connect with peers, mentors, and academic partners</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container-fluid">
+            <h2>Ready to Start Your Research Journey?</h2>
+            <p>Join our community of innovators and researchers at CCEW</p>
+            <div class="cta-buttons">
+                <a href="/auth/register/student" class="btn btn-custom" style="background-color: var(--accent-gold); color: var(--primary-color); border: none;">
+                    <i class="fas fa-user-plus"></i> Get Started
+                </a>
+                <a href="/auth/login" class="btn btn-custom" style="background-color: rgba(255,255,255,0.15); color: white; border: 2px solid white;">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p class="college-info">MKSSS's Cummins College of Engineering for Women, Pune</p>
+        <p>Research & Innovation Portal</p>
+        <p>&copy; 2026 All rights reserved</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

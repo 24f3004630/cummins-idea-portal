@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3>My Publications</h3>
+        <hr>
+    </div>
+</div>
+
+{% if publications %}
+<div class="row">
+    {% for pub in publications %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ pub.title }}</h5>
+                <p class="card-text text-muted">
+                    <strong>{{ pub.publication_type }}</strong> in {{ pub.venue }}
+                </p>
+                
+                <div class="mb-3">
+                    {% if pub.status == 'Published' %}
+                        <span class="badge bg-success">{{ pub.status }}</span>
+                    {% elif pub.status == 'Accepted' %}
+                        <span class="badge bg-info">{{ pub.status }}</span>
+                    {% elif pub.status == 'Submitted' %}
+                        <span class="badge bg-warning">{{ pub.status }}</span>
+                    {% else %}
+                        <span class="badge bg-danger">{{ pub.status }}</span>
+                    {% endif %}
+                </div>
+
+                <p class="small mb-2">
+                    {% if pub.year_of_publication %}
+                    <strong>Year:</strong> {{ pub.year_of_publication }}<br>
+                    {% endif %}
+                    {% if pub.volume %}
+                    <strong>Volume:</strong> {{ pub.volume }}<br>
+                    {% endif %}
+                    {% if pub.page_number %}
+                    <strong>Pages:</strong> {{ pub.page_number }}<br>
+                    {% endif %}
+                    {% if pub.doi %}
+                    <strong>DOI:</strong> {{ pub.doi }}<br>
+                    {% endif %}
+                    {% if pub.indexing %}
+                    <strong>Indexing:</strong> {{ pub.indexing }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    You don't have any publications yet. Join projects and contribute to research!
+</div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <a href="/student/dashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+{% endblock %}

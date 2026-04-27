@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4"><i class="fas fa-chart-bar"></i> IPR/Patent Analytics</h2>
+
+<!-- Key Metrics Row -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-light border-primary">
+            <div class="card-body">
+                <h5 class="card-title text-muted">Total IPRs</h5>
+                <h2 class="text-primary">{{ total_iprs }}</h2>
+                <small class="text-muted">All registered IPRs</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light border-success">
+            <div class="card-body">
+                <h5 class="card-title text-muted">Granted</h5>
+                <h2 class="text-success">{{ granted_count }}</h2>
+                <small class="text-muted">{{ (granted_count/total_iprs*100)|int }}% of total</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light border-warning">
+            <div class="card-body">
+                <h5 class="card-title text-muted">In Progress</h5>
+                <h2 class="text-warning">{{ in_progress_count }}</h2>
+                <small class="text-muted">Filed or Pending</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light border-danger">
+            <div class="card-body">
+                <h5 class="card-title text-muted">Rejected</h5>
+                <h2 class="text-danger">{{ rejected_count }}</h2>
+                <small class="text-muted">{{ (rejected_count/total_iprs*100)|int if total_iprs > 0 else 0 }}% of total</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <!-- IPR Status Distribution -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-light border-bottom">
+                <h5 class="card-title mb-0"><i class="fas fa-pie-chart"></i> IPR Status Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="statusChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- IPR Type Distribution -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-light border-bottom">
+                <h5 class="card-title mb-0"><i class="fas fa-tag"></i> IPR Type Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="typeChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Timeline Chart -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-light border-bottom">
+                <h5 class="card-title mb-0"><i class="fas fa-timeline"></i> IPRs Filed Over Time</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="timelineChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Faculty Contributors -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-light border-bottom">
+                <h5 class="card-title mb-0"><i class="fas fa-users"></i> Top Faculty Contributors</h5>
+            </div>
+            <div class="card-body">
+                {% if top_faculty %}
+                    <div class="list-group">
+                        {% for faculty_item in top_faculty %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">{{ faculty_item.name }}</h6>
+                                <small class="text-muted">{{ faculty_item.department }}</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">{{ faculty_item.ipr_count }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No data available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top Projects with IPRs -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-light border-bottom">
+                <h5 class="card-title mb-0"><i class="fas fa-project-diagram"></i> Top Projects with IPRs</h5>
+            </div>
+            <div class="card-body">
+                {% if top_projects %}
+                    <div class="list-group">
+                        {% for project_item in top_projects %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">{{ project_item.title[:30] }}...</h6>
+                                <small class="text-muted">IPRs: {{ project_item.ipr_count }}</small>
+                            </div>
+                            <a href="/admin/project/{{ project_item.project_id }}/lifecycle" class="btn btn-sm btn-outline-primary">
+                                View
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No data available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Status Distribution Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Granted', 'Pending', 'Filed', 'Rejected'],
+            datasets: [{
+                data: [{{ granted_count }}, {{ pending_count }}, {{ filed_count }}, {{ rejected_count }}],
+                backgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#dc3545'],
+                borderColor: '#fff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15
+                    }
+                }
+            }
+        }
+    });
+
+    // IPR Type Chart
+    const typeCtx = document.getElementById('typeChart').getContext('2d');
+    new Chart(typeCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ ipr_types|tojson }},
+            datasets: [{
+                label: 'Count',
+                data: {{ ipr_type_counts|tojson }},
+                backgroundColor: '#007bff',
+                borderColor: '#0056b3',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            indexAxis: 'y',
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: {
+                        padding: 15
+                    }
+                }
+            }
+        }
+    });
+
+    // Timeline Chart
+    const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+    new Chart(timelineCtx, {
+        type: 'line',
+        data: {
+            labels: {{ timeline_months|tojson }},
+            datasets: [{
+                label: 'IPRs Filed',
+                data: {{ timeline_counts|tojson }},
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                tension: 0.4,
+                fill: true,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                pointBackgroundColor: '#007bff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        callback: function(value) {
+                            return Number.isInteger(value) ? value : '';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

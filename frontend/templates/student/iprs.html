@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3>My IPR/Patents</h3>
+        <hr>
+    </div>
+</div>
+
+{% if iprs %}
+<div class="row">
+    {% for ipr in iprs %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ ipr.innovation_title }}</h5>
+                <p class="card-text">
+                    <strong>{{ ipr.ipr_type }}</strong>
+                </p>
+                
+                <div class="mb-3">
+                    {% if ipr.grant_status == 'Granted' %}
+                        <span class="badge bg-success">{{ ipr.grant_status }}</span>
+                    {% elif ipr.grant_status == 'Pending' %}
+                        <span class="badge bg-warning">{{ ipr.grant_status }}</span>
+                    {% elif ipr.grant_status == 'Filed' %}
+                        <span class="badge bg-info">{{ ipr.grant_status }}</span>
+                    {% else %}
+                        <span class="badge bg-danger">{{ ipr.grant_status }}</span>
+                    {% endif %}
+                </div>
+
+                <p class="small">
+                    {% if ipr.application_number %}
+                    <strong>Application #:</strong> {{ ipr.application_number }}<br>
+                    {% endif %}
+                    {% if ipr.filing_date %}
+                    <strong>Filing Date:</strong> {{ ipr.filing_date }}<br>
+                    {% endif %}
+                    {% if ipr.grant_date %}
+                    <strong>Grant Date:</strong> {{ ipr.grant_date }}<br>
+                    {% endif %}
+                    {% if ipr.expiry_date %}
+                    <strong>Expiry Date:</strong> {{ ipr.expiry_date }}<br>
+                    {% endif %}
+                    {% if ipr.ownership_type %}
+                    <strong>Ownership:</strong> {{ ipr.ownership_type }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    You don't have any IPR/Patents yet. Continue your research and innovation!
+</div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <a href="/student/dashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+{% endblock %}

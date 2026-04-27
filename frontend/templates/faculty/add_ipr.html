@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3>Add IPR / Patent</h3>
+        <p class="text-muted">Project: {{ project.project_title }}</p>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="POST" enctype="multipart/form-data" class="needs-validation">
+            <div class="mb-3">
+                <label for="innovation_title" class="form-label">Innovation Title *</label>
+                <input type="text" class="form-control" id="innovation_title" name="innovation_title" required>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="ipr_type" class="form-label">IPR Type *</label>
+                        <select class="form-select" id="ipr_type" name="ipr_type" required>
+                            <option value="">-- Select Type --</option>
+                            <option value="Patent">Patent</option>
+                            <option value="Copyright">Copyright</option>
+                            <option value="Trademark">Trademark</option>
+                            <option value="Design">Design</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="grant_status" class="form-label">Grant Status</label>
+                        <select class="form-select" id="grant_status" name="grant_status">
+                            <option value="Filed">Filed</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Granted">Granted</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="application_number" class="form-label">Application Number</label>
+                <input type="text" class="form-control" id="application_number" name="application_number">
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="filing_date" class="form-label">Filing Date</label>
+                        <input type="date" class="form-control" id="filing_date" name="filing_date">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="grant_date" class="form-label">Grant Date</label>
+                        <input type="date" class="form-control" id="grant_date" name="grant_date">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="registration_date" class="form-label">Registration Date</label>
+                        <input type="date" class="form-control" id="registration_date" name="registration_date">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="expiry_date" class="form-label">Expiry Date</label>
+                        <input type="date" class="form-control" id="expiry_date" name="expiry_date">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="ownership_type" class="form-label">Ownership Type</label>
+                <select class="form-select" id="ownership_type" name="ownership_type">
+                    <option value="Individual">Individual</option>
+                    <option value="Joint">Joint</option>
+                    <option value="Organization">Organization</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="document" class="form-label">IPR Document *</label>
+                <input type="file" class="form-control" id="document" name="document" accept=".pdf,.doc,.docx" required>
+                <div class="form-text">Upload related IPR documentation or application file.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="publication_id" class="form-label">Related Publication (Optional)</label>
+                <select class="form-select" id="publication_id" name="publication_id">
+                    <option value="">-- None --</option>
+                    {% for pub in publications %}
+                    <option value="{{ pub.publication_id }}">{{ pub.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Add IPR/Patent</button>
+                <a href="/faculty/project/{{ project.project_id }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

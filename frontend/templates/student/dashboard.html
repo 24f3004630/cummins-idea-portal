@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Student Dashboard</h2>
+
+<!-- Quick Stats -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-light stat-card border border-1">
+            <div class="card-body">
+                <h5 class="card-title text-primary">Projects Joined</h5>
+                <p class="card-text fs-5">{{ projects|length }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics Charts Section -->
+<div class="row mt-4 mb-4">
+    <h3 class="mb-4">My Progress & Contributions</h3>
+    
+    <!-- Projects by Status -->
+    <div class="col-lg-6 mb-4">
+        <div class="card p-4 shadow">
+            <h5 class="card-title">Projects by Status</h5>
+            <div class="chart-container">
+                <canvas id="projectChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contributions Overview -->
+    <div class="col-lg-6 mb-4">
+        <div class="card p-4 shadow">
+            <h5 class="card-title">Research Contributions</h5>
+            <div class="chart-container">
+                <canvas id="contributionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills Match -->
+    <div class="col-lg-12 mb-4">
+        <div class="card p-4 shadow">
+            <h5 class="card-title">Skills Match with Project Requirements</h5>
+            <div class="chart-container">
+                <canvas id="skillsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Projects List -->
+<div class="row mt-5">
+    <div class="col-md-12">
+        <h4 class="mb-3">Your Active Projects</h4>
+        <p class="text-muted">Projects you are enrolled in:</p>
+
+        {% if projects %}
+        <div class="list-group">
+            {% for project in projects %}
+            <a href="/student/projects" class="list-group-item list-group-item-action">
+                <div class="d-flex justify-content-between">
+                    <h5 class="mb-1">{{ project.project_title }}</h5>
+                    <span class="badge bg-secondary">{{ project.project_status }}</span>
+                </div>
+                <p class="mb-1">{{ project.domain }} | {{ project.department or 'N/A' }}</p>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">You are not yet part of any approved project.</p>
+        {% endif %}
+
+        <a href="/student/projects" class="btn btn-outline-primary mt-4">View all my projects</a>
+        <a href="/student/competitions" class="btn btn-outline-primary mt-4"><i class="fas fa-trophy"></i> My Competitions</a>
+    </div>
+</div>
+
+<script>
+const colors = {
+  primary: ['#1e4f8f', '#3764a4', '#5f80b8', '#92a8d6'],
+  accent: ['#5a6d88', '#7d8faa', '#b0bed3'],
+  surface: ['#f4f7fb', '#e8eef6', '#d9e1eb']
+};
+
+// Projects by Status
+fetch('/student/api/analytics/projects')
+  .then(response => response.json())
+  .then(data => {
+    const ctx = document.getElementById('projectChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: data.statuses,
+        datasets: [{
+          data: data.counts,
+          backgroundColor: colors.primary.slice(0, data.statuses.length),
+          borderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  });
+
+// Contributions Overview
+fetch('/student/api/analytics/contributions')
+  .then(response => response.json())
+  .then(data => {
+    const ctx = document.getElementById('contributionChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Publications', 'IPRs/Patents', 'Startups'],
+        datasets: [{
+          label: 'Count',
+          data: [data.publication_count, data.ipr_count, data.startup_count],
+          backgroundColor: colors.primary.slice(0, 3),
+          borderColor: '#34495e',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              callback: function(value) {
+                return Number.isInteger(value) ? value : '';
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+
+// Skills Match
+fetch('/student/api/analytics/skills-match')
+  .then(response => response.json())
+  .then(data => {
+    if (data.projects.length === 0) {
+      document.getElementById('skillsChart').style.display = 'none';
+      return;
+    }
+    const ctx = document.getElementById('skillsChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.projects,
+        datasets: [{
+          label: 'Matching Skills',
+          data: data.match_counts,
+          backgroundColor: colors.primary[2],
+          borderColor: '#34495e',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              callback: function(value) {
+                return Number.isInteger(value) ? value : '';
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3>Faculty Profile</h3>
+        <hr>
+    </div>
+</div>
+
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="POST">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Basic Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ faculty.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ faculty.email }}" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ faculty.phone or '' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="department" class="form-label">Department</label>
+                                <input type="text" class="form-control" id="department" name="department" value="{{ faculty.department or '' }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Professional Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="bio" class="form-label">Bio / About You</label>
+                        <textarea class="form-control" id="bio" name="bio" rows="4" placeholder="Tell us about yourself">{{ faculty.bio or '' }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="skills" class="form-label">Skills (comma-separated)</label>
+                        <input type="text" class="form-control" id="skills" name="skills" value="{{ faculty.skills or '' }}" placeholder="e.g., Machine Learning, AI, Research">
+                        <small class="text-muted">Add skills that help students and admins understand your research profile.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+                <a href="/faculty/dashboard" class="btn btn-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Profile Completeness</h5>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-3" style="height: 25px;">
+                    {% set completion = 0 %}
+                    {% if faculty.name %}{% set completion = completion + 20 %}{% endif %}
+                    {% if faculty.email %}{% set completion = completion + 20 %}{% endif %}
+                    {% if faculty.department %}{% set completion = completion + 20 %}{% endif %}
+                    {% if faculty.skills %}{% set completion = completion + 20 %}{% endif %}
+                    {% if faculty.bio %}{% set completion = completion + 20 %}{% endif %}
+                    <div class="progress-bar" role="progressbar" style="width: {{ completion }}%" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100">
+                        {{ completion }}%
+                    </div>
+                </div>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        {% if faculty.name %}
+                            <span class="badge bg-success">✓</span>
+                        {% else %}
+                            <span class="badge bg-secondary">✗</span>
+                        {% endif %}
+                        Name
+                    </li>
+                    <li class="mb-2">
+                        {% if faculty.email %}
+                            <span class="badge bg-success">✓</span>
+                        {% else %}
+                            <span class="badge bg-secondary">✗</span>
+                        {% endif %}
+                        Email
+                    </li>
+                    <li class="mb-2">
+                        {% if faculty.department %}
+                            <span class="badge bg-success">✓</span>
+                        {% else %}
+                            <span class="badge bg-secondary">✗</span>
+                        {% endif %}
+                        Department
+                    </li>
+                    <li class="mb-2">
+                        {% if faculty.skills %}
+                            <span class="badge bg-success">✓</span>
+                        {% else %}
+                            <span class="badge bg-secondary">✗</span>
+                        {% endif %}
+                        Skills
+                    </li>
+                    <li class="mb-2">
+                        {% if faculty.bio %}
+                            <span class="badge bg-success">✓</span>
+                        {% else %}
+                            <span class="badge bg-secondary">✗</span>
+                        {% endif %}
+                        Bio
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

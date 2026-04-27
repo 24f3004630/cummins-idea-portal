@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3>My Projects</h3>
+        <hr>
+    </div>
+</div>
+
+{% if joined_projects %}
+<div class="row">
+    {% for project, member in joined_projects %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">{{ project.project_title }}</h5>
+                <p class="card-text text-muted">{{ project.project_description[:100] }}...</p>
+                
+                <div class="mb-3">
+                    <span class="badge bg-secondary">{{ project.domain }}</span>
+                    {% if project.project_status == 'Ongoing' %}
+                        <span class="badge bg-success">Ongoing</span>
+                    {% elif project.project_status == 'Completed' %}
+                        <span class="badge bg-info">Completed</span>
+                    {% else %}
+                        <span class="badge bg-warning">{{ project.project_status }}</span>
+                    {% endif %}
+                </div>
+
+                <p class="small mb-2">
+                    <strong>Your Role:</strong> {{ member.role }}
+                </p>
+                <p class="small mb-0">
+                    <strong>Faculty:</strong> {{ project_faculty[project.project_id].name }}
+                </p>
+            </div>
+            <div class="card-footer bg-light">
+                <a href="/student/project/{{ project.project_id }}" class="btn btn-sm btn-primary">View</a>
+                <form method="POST" action="/student/project/{{ project.project_id }}/leave" style="display:inline;">
+                    <button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to leave this project?')">Leave</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    You haven't joined any projects yet. <a href="/student/projects">Explore projects</a> to join one!
+</div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <a href="/student/dashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+{% endblock %}

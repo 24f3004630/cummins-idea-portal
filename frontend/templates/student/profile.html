@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3>Update Profile</h3>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Basic Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ student.name }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ student.email }}" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ student.phone or '' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="department" class="form-label">Department</label>
+                                <input type="text" class="form-control" id="department" name="department" value="{{ student.department or '' }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Professional Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="bio" class="form-label">Bio / About You</label>
+                        <textarea class="form-control" id="bio" name="bio" rows="4" placeholder="Tell us about yourself">{{ student.bio or '' }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="skills" class="form-label">Skills (comma-separated) *</label>
+                        <input type="text" class="form-control" id="skills" name="skills" 
+                               value="{{ student.skills or '' }}"
+                               placeholder="e.g., Python, Machine Learning, Web Development, Data Analysis">
+                        <small class="text-muted">List your technical and professional skills separated by commas</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="resume" class="form-label">Resume Upload (PDF/DOC)</label>
+                        <input type="file" class="form-control" id="resume" name="resume" accept=".pdf,.doc,.docx">
+                        {% if student.resume_url %}
+                        <div class="mt-2">
+                            <small class="text-muted">Current resume: {{ student.resume_url }}</small>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+                <a href="/student/dashboard" class="btn btn-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Profile Completeness</h5>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-3" style="height: 25px;">
+                    {% set completion = 0 %}
+                    {% if student.name %}{% set completion = completion + 20 %}{% endif %}
+                    {% if student.email %}{% set completion = completion + 20 %}{% endif %}
+                    {% if student.skills %}{% set completion = completion + 20 %}{% endif %}
+                    {% if student.resume_url %}{% set completion = completion + 20 %}{% endif %}
+                    {% if student.bio %}{% set completion = completion + 20 %}{% endif %}
+                    <div class="progress-bar" role="progressbar" style="width: {{ completion }}%" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100">
+                        {{ completion }}%
+                    </div>
+                </div>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        {% if student.name %}
+                            <span class="badge bg-success">✓</span>
+                        {% else %}
+                            <span class="badge bg-secondary">✗</span>
+                        {% endif %}
+                        Name
+                    </li>
+                    <li class="mb-2">
+                        {% if student.email %}
+                            <span class="badge bg-success">✓</span>
+                        {% else %}
+                            <span class="badge bg-secondary">✗</span>
+                        {% endif %}
+                        Email
+                    </li>
+                    <li class="mb-2">
+                        {% if student.skills %}
+                            <span class="badge bg-success">✓</span>
+                        {% else %}
+                            <span class="badge bg-secondary">✗</span>
+                        {% endif %}
+                        Skills
+                    </li>
+                    <li class="mb-2">
+                        {% if student.resume_url %}
+                            <span class="badge bg-success">✓</span>
+                        {% else %}
+                            <span class="badge bg-secondary">✗</span>
+                        {% endif %}
+                        Resume
+                    </li>
+                    <li class="mb-2">
+                        {% if student.bio %}
+                            <span class="badge bg-success">✓</span>
+                        {% else %}
+                            <span class="badge bg-secondary">✗</span>
+                        {% endif %}
+                        Bio
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

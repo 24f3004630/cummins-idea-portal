@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3>My Research Projects</h3>
+            <a href="/faculty/project/create" class="btn btn-primary">+ New Project</a>
+        </div>
+        <hr>
+    </div>
+</div>
+
+{% if projects %}
+<div class="row">
+    {% for project in projects %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">{{ project.project_title }}</h5>
+                <p class="card-text text-muted">{{ project.project_description[:100] }}...</p>
+                
+                <div class="mb-3">
+                    <span class="badge bg-secondary">{{ project.domain }}</span>
+                    {% if project.project_status == 'Ongoing' %}
+                        <span class="badge bg-success">{{ project.project_status }}</span>
+                    {% elif project.project_status == 'Completed' %}
+                        <span class="badge bg-info">{{ project.project_status }}</span>
+                    {% else %}
+                        <span class="badge bg-warning">{{ project.project_status }}</span>
+                    {% endif %}
+                    {% if project.is_startup_converted %}
+                        <span class="badge bg-success">Startup</span>
+                    {% endif %}
+                </div>
+
+                <p class="card-text small text-muted">
+                    <strong>Team Size:</strong> {{ project.team_size }}<br>
+                    <strong>Skills:</strong> {{ project.required_skills or 'N/A' }}
+                </p>
+            </div>
+            <div class="card-footer bg-light">
+                <a href="/faculty/project/{{ project.project_id }}" class="btn btn-primary btn-sm">View & Manage</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    <h5>No research projects yet!</h5>
+    <p>Start creating your first research project to manage your academic work.</p>
+    <a href="/faculty/project/create" class="btn btn-primary">Create First Project</a>
+</div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <a href="/faculty/dashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+{% endblock %}

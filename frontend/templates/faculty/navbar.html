@@ -1,0 +1,47 @@
+<!-- Faculty Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="/faculty/dashboard">
+            <i class="fas fa-chalkboard-user"></i> <strong>Idea Portal - Faculty</strong>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#facultyNavbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="facultyNavbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/faculty/dashboard">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/faculty/projects">
+                        <i class="fas fa-folder"></i> My Projects
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/faculty/project/create">
+                        <i class="fas fa-plus-circle"></i> Create Project
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/faculty/competitions">
+                        <i class="fas fa-trophy"></i> Competitions
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="facultyProfileDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle"></i> Profile
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="facultyProfileDropdown">
+                        <li><a class="dropdown-item" href="/faculty/profile"><i class="fas fa-user-edit"></i> Edit Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/auth/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

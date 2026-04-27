@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2>{{ project.project_title }}</h2>
+        <p class="text-muted">{{ project.domain }}</p>
+    </div>
+</div>
+
+<!-- Project Status and Actions -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Status:</strong> 
+                            {% if project.project_status == 'Ongoing' %}
+                                <span class="badge bg-success">{{ project.project_status }}</span>
+                            {% elif project.project_status == 'Completed' %}
+                                <span class="badge bg-info">{{ project.project_status }}</span>
+                            {% else %}
+                                <span class="badge bg-warning">{{ project.project_status }}</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Team Size:</strong> {{ project.team_size }}</p>
+                        <p><strong>Startup Converted:</strong> 
+                            {% if project.is_startup_converted %}
+                                <span class="badge bg-success">Yes</span>
+                            {% else %}
+                                <span class="badge bg-secondary">No</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <form method="POST" action="/faculty/project/{{ project.project_id }}/update-status" class="mb-2">
+                            <div class="input-group">
+                                <select class="form-select form-select-sm" name="project_status">
+                                    <option value="Ongoing" {% if project.project_status == 'Ongoing' %}selected{% endif %}>Ongoing</option>
+                                    <option value="Completed" {% if project.project_status == 'Completed' %}selected{% endif %}>Completed</option>
+                                    <option value="On Hold" {% if project.project_status == 'On Hold' %}selected{% endif %}>On Hold</option>
+                                </select>
+                                <button class="btn btn-outline-primary btn-sm" type="submit">Update Status</button>
+                            </div>
+                        </form>
+                        {% if not project.is_startup_converted %}
+                        <a href="/faculty/project/{{ project.project_id }}/convert-startup" class="btn btn-success btn-sm">Convert to Startup</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Project Details</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Description:</strong></p>
+                <p>{{ project.project_description }}</p>
+                <hr>
+                <p><strong>Required Skills:</strong></p>
+                <p>{{ project.required_skills or 'N/A' }}</p>
+                <hr>
+                <p><strong>Department:</strong> {{ project.department or 'N/A' }}</p>
+                <p><strong>Location:</strong> {{ project.program_location or 'N/A' }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <!-- Team Members Section -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Team Members ({{ students|length }})</h5>
+               <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">+ Add Team Member</button>
+
+            </div>
+            <div class="card-body">
+                {% if team_members %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member, person in team_members %}
+                            <tr>
+                                <td>{{ person.name }}</td>
+                                <td>{{ person.email }}</td>
+                                <td>
+                                    <form method="POST" action="/faculty/project/{{ project.project_id }}/assign-role/{{ person.person_id }}" class="d-inline">
+                                        <div class="input-group input-group-sm">
+                                            <select class="form-select" name="role" style="max-width: 120px;">
+                                                <option value="Faculty Lead" {% if member.role == 'Faculty Lead' %}selected{% endif %}>Faculty Lead</option>
+                                                <option value="Team Lead" {% if member.role == 'Team Lead' %}selected{% endif %}>Team Lead</option>
+                                                <option value="Team Member" {% if member.role == 'Team Member' %}selected{% endif %}>Team Member</option>
+                                                <option value="Mentor" {% if member.role == 'Mentor' %}selected{% endif %}>Mentor</option>
+                                            </select>
+                                            <button class="btn btn-outline-secondary btn-sm" type="submit">Update</button>
+                                        </div>
+                                    </form>
+                                </td>
+                                <td>
+                                    {% if member.role != 'Faculty Lead' %}
+                                    <form method="POST" action="/faculty/project/{{ project.project_id }}/remove-student/{{ person.person_id }}" style="display:inline;">
+                                        <button class="btn btn-danger btn-sm" type="submit" onclick="return confirm('Remove this member?')">Remove</button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No team members yet</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Publications Section -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Publications ({{ publications|length }})</h5>
+                <a href="/faculty/project/{{ project.project_id }}/publication/add" class="btn btn-light btn-sm">+ Add Publication</a>
+            </div>
+            <div class="card-body">
+                {% if publications %}
+                <div class="list-group">
+                  {% for pub in publications %}
+<div class="list-group-item">
+    <div class="d-flex w-100 justify-content-between align-items-center">
+        
+        <div>
+            <h6 class="mb-1">{{ pub.title }}</h6>
+            <small class="badge bg-primary">{{ pub.publication_type }}</small>
+        </div>
+
+        <!-- ✅ Edit button aligned right -->
+        <a href="/faculty/publication/{{ pub.publication_id }}/edit" 
+           class="btn btn-warning btn-sm">Edit</a>
+    </div>
+
+    <p class="mb-1 small">
+        {{ pub.venue }} ({{ pub.year_of_publication }})
+    </p>
+    <p class="mb-0 small text-muted">
+        Status: {{ pub.status }}
+    </p>
+    {% if pub.document_url %}
+    <p class="mb-0 small mt-1">
+        <a href="{{ pub.document_url }}" target="_blank" class="text-decoration-none">Download Publication Document</a>
+    </p>
+    {% endif %}
+</div>
+{% endfor %}
+
+                 
+                </div>
+                {% else %}
+                <p class="text-muted">No publications yet</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Funding Section -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Funding Details ({{ fundings|length }})</h5>
+                <a href="/faculty/project/{{ project.project_id }}/funding/add" class="btn btn-light btn-sm">+ Add Funding</a>
+            </div>
+            <div class="card-body">
+                {% if fundings %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Funding Agency</th>
+                                <th>Type</th>
+                                <th>Sanctioned Amount</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for funding, funder in fundings %}
+                            <tr>
+                                <td>{{ funder.funding_agency }}</td>
+                                <td>{{ funder.funding_type }}</td>
+                                <td>₹{{ funding.sanctioned_amount|default('0') }}</td>
+                                <td>{{ funding.sanctioned_date|default('N/A') }}</td>
+                                <td>
+                                    <a href="/faculty/project/{{ project.project_id }}/funding/{{ funder.fund_id }}/edit" class="btn btn-warning btn-sm">Edit</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No funding details yet</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- IPR/Patents Section -->
+        <div class="card">
+            <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">IPR/Patents ({{ iprs|length }})</h5>
+                <a href="/faculty/project/{{ project.project_id }}/ipr/add" class="btn btn-light btn-sm">+ Add IPR</a>
+            </div>
+            <div class="card-body">
+                {% if iprs %}
+                <div class="list-group">
+                    {% for ipr in iprs %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ ipr.innovation_title }}</h6>
+                                <p class="mb-1 small">App #: {{ ipr.application_number }} | Status: {{ ipr.grant_status }}</p>
+                                {% if ipr.document_url %}
+                                <p class="mb-0 small mt-1">
+                                    <a href="{{ ipr.document_url }}" target="_blank" class="text-decoration-none">Download IPR Document</a>
+                                </p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <small class="badge bg-danger me-2">{{ ipr.ipr_type }}</small>
+                                <a href="/faculty/project/{{ project.project_id }}/ipr/{{ ipr.ipr_id }}/edit" class="btn btn-warning btn-sm">Edit</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No IPR/Patents yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal to Add Student -->
+<div class="modal fade" id="addStudentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Student to Project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="/faculty/project/{{ project.project_id }}/add-student">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="student_search" class="form-label">Search Students</label>
+                        <input type="text" class="form-control" id="student_search" placeholder="Type to search students...">
+                    </div>
+                    <div class="mb-3">
+                        <label for="student_id" class="form-label">Select Student</label>
+                        <select class="form-select" id="student_id" name="student_id" required size="5">
+                            <option value="">-- Choose Student --</option>
+                            {% for student in available_students %}
+                            <option value="{{ student.person_id }}" data-name="{{ student.name|lower }}" data-email="{{ student.email|lower }}">{{ student.name }} ({{ student.email }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-select" id="role" name="role">
+                            <option value="Team Member" selected>Team Member</option>
+                            <option value="Team Lead">Team Lead</option>
+                            <option value="Mentor">Mentor</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <a href="/faculty/projects" class="btn btn-outline-secondary">Back to Projects</a>
+    </div>
+</div>
+
+<script>
+document.getElementById('student_search').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const select = document.getElementById('student_id');
+    const options = select.querySelectorAll('option');
+    
+    options.forEach(option => {
+        if (option.value === '') {
+            option.style.display = 'block'; // Always show the placeholder
+            return;
+        }
+        
+        const name = option.getAttribute('data-name') || '';
+        const email = option.getAttribute('data-email') || '';
+        
+        if (name.includes(searchTerm) || email.includes(searchTerm)) {
+            option.style.display = 'block';
+        } else {
+            option.style.display = 'none';
+        }
+    });
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}
