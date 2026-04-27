@@ -1,0 +1,7 @@
+Flask
+Flask-SQLAlchemy
+Flask-Mail
+celery[redis]
+redis
+python-dotenv
+weasyprint

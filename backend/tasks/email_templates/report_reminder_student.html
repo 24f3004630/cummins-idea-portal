@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#f0f4f8; font-family:'Inter',Arial,sans-serif; color:#1a202c; padding:32px 16px; }
+  .wrapper { max-width:600px; margin:0 auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.08); }
+  .header { background:linear-gradient(135deg,#1e1b4b 0%,#4f46e5 100%); padding:36px 40px 24px; text-align:center; }
+  .header .logo { font-size:22px; font-weight:700; color:#fff; }
+  .header .sub { font-size:12px; color:rgba(255,255,255,0.7); margin-top:4px; letter-spacing:1.5px; text-transform:uppercase; }
+  .badge-area { background:linear-gradient(135deg,#1e1b4b 0%,#4f46e5 100%); padding:0 40px 28px; text-align:center; }
+  .badge { display:inline-block; width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,0.15); border:2px solid rgba(255,255,255,0.3); line-height:60px; font-size:26px; }
+  .body { padding:36px 40px 28px; }
+  .greeting { font-size:20px; font-weight:600; color:#1e1b4b; margin-bottom:14px; }
+  p { font-size:15px; line-height:1.7; color:#4a5568; margin-bottom:12px; }
+  .checklist { background:#eef2ff; border-left:4px solid #4f46e5; border-radius:6px; padding:18px 20px; margin:20px 0; }
+  .checklist p { margin-bottom:8px; font-size:14px; }
+  .checklist strong { color:#1e1b4b; }
+  .checklist .item { display:flex; align-items:flex-start; gap:10px; margin-bottom:10px; }
+  .checklist .item:last-child { margin-bottom:0; }
+  .checklist .icon { font-size:16px; flex-shrink:0; margin-top:2px; }
+  .cta-wrap { text-align:center; margin:28px 0; }
+  .cta-btn { display:inline-block; padding:13px 34px; background:linear-gradient(135deg,#4f46e5,#4338ca); color:#fff !important; text-decoration:none; border-radius:8px; font-size:15px; font-weight:600; box-shadow:0 4px 12px rgba(79,70,229,0.35); }
+  .footer { background:#eef2ff; padding:22px 40px; text-align:center; border-top:1px solid #c7d2fe; }
+  .footer p { font-size:12px; color:#718096; line-height:1.6; margin-bottom:4px; }
+  .footer a { color:#4f46e5; text-decoration:none; }
+  hr { border:none; border-top:1px solid #e2e8f0; margin:20px 0; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <div class="logo">🎓 {{ portal_name }}</div>
+    <div class="sub">Cummins College of Engineering for Women, Pune</div>
+  </div>
+  <div class="badge-area"><div class="badge">💡</div></div>
+  <div class="body">
+    <div class="greeting">Keep Your Research Profile Updated!</div>
+    <p>Dear {{ student_name }},</p>
+    <p>
+      This is your weekly reminder from the <strong>{{ portal_name }}</strong>.
+      Keeping your research profile and contributions up-to-date helps faculty and
+      administrators track your research engagement for accreditation purposes.
+    </p>
+    <div class="checklist">
+      <p><strong>Here's what you can do this week:</strong></p>
+      <div class="item"><span class="icon">🔍</span><span>Browse and apply to new research projects that match your skills</span></div>
+      <div class="item"><span class="icon">📋</span><span>Update your skills and bio in your student profile</span></div>
+      <div class="item"><span class="icon">📊</span><span>Check the status of your current project(s) and contributions</span></div>
+      <div class="item"><span class="icon">🤝</span><span>Coordinate with your faculty lead on ongoing research tasks</span></div>
+    </div>
+    <p>
+      You are currently part of <strong>{{ active_projects }} project(s)</strong>.
+      Stay engaged and make your research count!
+    </p>
+    <div class="cta-wrap">
+      <a class="cta-btn" href="{{ portal_url }}/student/dashboard">Go to My Dashboard →</a>
+    </div>
+    <hr />
+    <p style="font-size:13px;color:#718096;">
+      This is an automated weekly reminder sent to all active students on the portal.
+    </p>
+  </div>
+  <div class="footer">
+    <p>Automated weekly reminder from <strong>{{ portal_name }}</strong>. Do not reply.</p>
+    <p><a href="{{ portal_url }}">Visit Portal</a> &nbsp;|&nbsp; <a href="{{ portal_url }}/auth/login">Login</a></p>
+    <p style="margin-top:10px;color:#a0aec0;">© {{ year }} Cummins College of Engineering for Women, Pune.</p>
+  </div>
+</div>
+</body>
+</html>

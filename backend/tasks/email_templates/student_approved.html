@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#f0f4f8; font-family:'Inter',Arial,sans-serif; color:#1a202c; padding:32px 16px; }
+  .wrapper { max-width:600px; margin:0 auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.08); }
+  .header { background:linear-gradient(135deg,#064e3b 0%,#059669 100%); padding:36px 40px 24px; text-align:center; }
+  .header .logo { font-size:22px; font-weight:700; color:#fff; }
+  .header .sub { font-size:12px; color:rgba(255,255,255,0.7); margin-top:4px; letter-spacing:1.5px; text-transform:uppercase; }
+  .badge-area { background:linear-gradient(135deg,#064e3b 0%,#059669 100%); padding:0 40px 28px; text-align:center; }
+  .badge { display:inline-block; width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,0.15); border:2px solid rgba(255,255,255,0.3); line-height:60px; font-size:26px; }
+  .body { padding:36px 40px 28px; }
+  .greeting { font-size:20px; font-weight:600; color:#064e3b; margin-bottom:14px; }
+  p { font-size:15px; line-height:1.7; color:#4a5568; margin-bottom:12px; }
+  .info-box { background:#f0fdf4; border-left:4px solid #059669; border-radius:6px; padding:16px 20px; margin:20px 0; }
+  .info-box p { margin-bottom:6px; font-size:14px; }
+  .info-box strong { color:#064e3b; }
+  .cta-wrap { text-align:center; margin:28px 0; }
+  .cta-btn { display:inline-block; padding:13px 34px; background:linear-gradient(135deg,#059669,#047857); color:#fff !important; text-decoration:none; border-radius:8px; font-size:15px; font-weight:600; box-shadow:0 4px 12px rgba(5,150,105,0.35); }
+  .footer { background:#f0fdf4; padding:22px 40px; text-align:center; border-top:1px solid #d1fae5; }
+  .footer p { font-size:12px; color:#718096; line-height:1.6; margin-bottom:4px; }
+  .footer a { color:#059669; text-decoration:none; }
+  hr { border:none; border-top:1px solid #e2e8f0; margin:20px 0; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <div class="logo">🎓 {{ portal_name }}</div>
+    <div class="sub">Cummins College of Engineering for Women, Pune</div>
+  </div>
+  <div class="badge-area"><div class="badge">🎉</div></div>
+  <div class="body">
+    <div class="greeting">You've Joined a Research Project!</div>
+    <p>Dear {{ student_name }},</p>
+    <p>
+      You have been approved to join a research project on the {{ portal_name }}.
+      Welcome to the team — we're excited to have you on board!
+    </p>
+    <div class="info-box">
+      <p><strong>Project:</strong> {{ project_title }}</p>
+      <p><strong>Faculty Lead:</strong> {{ faculty_name }}</p>
+      <p><strong>Department:</strong> {{ project_department }}</p>
+      <p><strong>Your Role:</strong> {{ student_role }}</p>
+    </div>
+    <p>
+      Log in to the portal to view the full project details, track milestones, and
+      collaborate with your team.
+    </p>
+    <div class="cta-wrap">
+      <a class="cta-btn" href="{{ portal_url }}/student/project/{{ project_id }}">View Project →</a>
+    </div>
+    <hr />
+    <p style="font-size:13px;color:#718096;">
+      Keep your profile updated with your skills and contributions for a stronger research portfolio.
+    </p>
+  </div>
+  <div class="footer">
+    <p>Automated notification from <strong>{{ portal_name }}</strong>. Do not reply.</p>
+    <p><a href="{{ portal_url }}">Visit Portal</a> &nbsp;|&nbsp; <a href="{{ portal_url }}/auth/login">Login</a></p>
+    <p style="margin-top:10px;color:#a0aec0;">© {{ year }} Cummins College of Engineering for Women, Pune.</p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{ subject }}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: #f0f4f8;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    color: #1a202c;
+    padding: 32px 16px;
+  }
+
+  .wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+
+  /* ── Header ─────────────────────────────────────── */
+  .header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+    padding: 36px 40px 28px;
+    text-align: center;
+  }
+
+  .header .logo-text {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+  }
+
+  .header .logo-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  /* ── Badge / Icon Area ─────────────────────────── */
+  .badge-area {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+    padding: 0 40px 32px;
+    text-align: center;
+  }
+
+  .badge {
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    line-height: 64px;
+    font-size: 28px;
+  }
+
+  /* ── Body ───────────────────────────────────────── */
+  .body {
+    padding: 40px 40px 32px;
+  }
+
+  .greeting {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e3a5f;
+    margin-bottom: 16px;
+  }
+
+  .body p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #4a5568;
+    margin-bottom: 14px;
+  }
+
+  /* ── Info Box ───────────────────────────────────── */
+  .info-box {
+    background: #f7faff;
+    border-left: 4px solid #2563eb;
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 24px 0;
+  }
+
+  .info-box p {
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+
+  .info-box p:last-child { margin-bottom: 0; }
+
+  .info-box strong { color: #1e3a5f; }
+
+  /* ── CTA Button ─────────────────────────────────── */
+  .cta-wrap {
+    text-align: center;
+    margin: 30px 0;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    padding: 14px 36px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff !important;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 12px rgba(37,99,235,0.35);
+  }
+
+  /* ── Divider ────────────────────────────────────── */
+  .divider {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 24px 0;
+  }
+
+  /* ── Footer ─────────────────────────────────────── */
+  .footer {
+    background: #f7faff;
+    padding: 24px 40px;
+    text-align: center;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .footer p {
+    font-size: 12px;
+    color: #718096;
+    line-height: 1.6;
+    margin-bottom: 4px;
+  }
+
+  .footer a {
+    color: #2563eb;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-text">🎓 {{ portal_name }}</div>
+    <div class="logo-sub">Cummins College of Engineering for Women, Pune</div>
+  </div>
+
+  <!-- Badge -->
+  <div class="badge-area">
+    <div class="badge">{{ badge_icon }}</div>
+  </div>
+
+  <!-- Body -->
+  <div class="body">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>This is an automated message from <strong>{{ portal_name }}</strong>.</p>
+    <p>Please do not reply to this email.</p>
+    <p style="margin-top: 8px;">
+      <a href="{{ portal_url }}">Visit the Portal</a> &nbsp;|&nbsp;
+      <a href="{{ portal_url }}/auth/login">Login</a>
+    </p>
+    <p style="margin-top: 12px; color: #a0aec0;">
+      © {{ year }} Cummins College of Engineering for Women, Pune. All rights reserved.
+    </p>
+  </div>
+
+</div>
+</body>
+</html>

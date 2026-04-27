@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#f0f4f8; font-family:'Inter',Arial,sans-serif; color:#1a202c; padding:32px 16px; }
+  .wrapper { max-width:600px; margin:0 auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.08); }
+  .header { background:linear-gradient(135deg,#0f172a 0%,#0284c7 100%); padding:36px 40px 24px; text-align:center; }
+  .header .logo { font-size:22px; font-weight:700; color:#fff; }
+  .header .sub { font-size:12px; color:rgba(255,255,255,0.7); margin-top:4px; letter-spacing:1.5px; text-transform:uppercase; }
+  .badge-area { background:linear-gradient(135deg,#0f172a 0%,#0284c7 100%); padding:0 40px 28px; text-align:center; }
+  .badge { display:inline-block; width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,0.15); border:2px solid rgba(255,255,255,0.3); line-height:60px; font-size:26px; }
+  .body { padding:36px 40px 28px; }
+  .greeting { font-size:20px; font-weight:600; color:#0f172a; margin-bottom:14px; }
+  p { font-size:15px; line-height:1.7; color:#4a5568; margin-bottom:12px; }
+  .metrics-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0; }
+  .metric-card { background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; padding:14px 16px; text-align:center; }
+  .metric-card .val { font-size:28px; font-weight:700; color:#0284c7; }
+  .metric-card .lbl { font-size:12px; color:#64748b; margin-top:4px; }
+  .cta-wrap { text-align:center; margin:28px 0; }
+  .cta-btn { display:inline-block; padding:13px 34px; background:linear-gradient(135deg,#0284c7,#0369a1); color:#fff !important; text-decoration:none; border-radius:8px; font-size:15px; font-weight:600; box-shadow:0 4px 12px rgba(2,132,199,0.35); }
+  .download-note { background:#f0f9ff; border-left:4px solid #0284c7; border-radius:6px; padding:14px 18px; margin:20px 0; font-size:14px; color:#0369a1; }
+  .footer { background:#f0f9ff; padding:22px 40px; text-align:center; border-top:1px solid #bae6fd; }
+  .footer p { font-size:12px; color:#718096; line-height:1.6; margin-bottom:4px; }
+  .footer a { color:#0284c7; text-decoration:none; }
+  hr { border:none; border-top:1px solid #e2e8f0; margin:20px 0; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <div class="logo">🎓 {{ portal_name }}</div>
+    <div class="sub">Cummins College of Engineering for Women, Pune</div>
+  </div>
+  <div class="badge-area"><div class="badge">📊</div></div>
+  <div class="body">
+    <div class="greeting">Monthly Accreditation Report Ready</div>
+    <p>Hello Admin,</p>
+    <p>
+      The <strong>{{ month_year }} Accreditation Report</strong> has been auto-generated
+      and is ready for your review. Here's a snapshot of the key institutional research metrics:
+    </p>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="val">{{ total_projects }}</div>
+        <div class="lbl">Total Projects</div>
+      </div>
+      <div class="metric-card">
+        <div class="val">{{ total_publications }}</div>
+        <div class="lbl">Publications</div>
+      </div>
+      <div class="metric-card">
+        <div class="val">{{ total_iprs }}</div>
+        <div class="lbl">IPRs Filed</div>
+      </div>
+      <div class="metric-card">
+        <div class="val">{{ total_startups }}</div>
+        <div class="lbl">Startups Incubated</div>
+      </div>
+    </div>
+
+    <div class="download-note">
+      A full PDF/JSON report is available for download from the accreditation dashboard.
+    </div>
+
+    <div class="cta-wrap">
+      <a class="cta-btn" href="{{ portal_url }}/admin/accreditation">View Full Report →</a>
+    </div>
+    <hr />
+    <p style="font-size:13px;color:#718096;">
+      This report was automatically generated on {{ generated_at }}.
+      Reports are generated on the 1st of every month.
+    </p>
+  </div>
+  <div class="footer">
+    <p>Automated monthly report from <strong>{{ portal_name }}</strong>. Do not reply.</p>
+    <p><a href="{{ portal_url }}">Visit Portal</a> &nbsp;|&nbsp; <a href="{{ portal_url }}/auth/login">Login</a></p>
+    <p style="margin-top:10px;color:#a0aec0;">© {{ year }} Cummins College of Engineering for Women, Pune.</p>
+  </div>
+</div>
+</body>
+</html>
