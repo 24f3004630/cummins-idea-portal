@@ -519,8 +519,8 @@ def accreditation_dashboard():
         .all()
     ]
 
-    departments = sorted(set(project_departments + person_departments), key=lambda value: (value or '').lower())
-    available_departments = ['All'] + departments
+    # Hardcoded department options for accreditation
+    available_departments = ['All', 'Computer Science', 'Information Technology', 'Electronics and Telecommunication', 'Instrumentation', 'Mechanical']
 
     generator = AccreditationReportGenerator()
     report = generator.generate_comprehensive_report(current_year, selected_department)
