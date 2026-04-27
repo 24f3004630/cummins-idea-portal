@@ -1,6 +1,7 @@
 from flask import Flask, render_template, session
 from backend.config import Config
-from database.db import db
+from backend.database.db import db
+
 
 # CREATE APP FIRST
 app = Flask(__name__)
