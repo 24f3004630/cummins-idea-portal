@@ -81,6 +81,31 @@ def dashboard():
                          iprs=iprs)
 
 
+@faculty_bp.route('/college-dashboard')
+@login_required
+@role_required('Faculty')
+def college_dashboard():
+    """College-wide analytics view for faculty (view only)."""
+    total_users = Person.query.count()
+    total_students = Person.query.filter_by(type='Student').count()
+    total_faculty = Person.query.filter_by(type='Faculty').count()
+    active_users = Person.query.filter_by(is_approved=True).count()
+    total_projects = ResearchProject.query.count()
+    total_publications = Publication.query.count()
+    total_iprs = IPR.query.count()
+    total_startups = Startup.query.count()
+
+    return render_template('faculty/college_dashboard.html',
+                           total_users=total_users,
+                           total_students=total_students,
+                           total_faculty=total_faculty,
+                           active_users=active_users,
+                           total_projects=total_projects,
+                           total_publications=total_publications,
+                           total_iprs=total_iprs,
+                           total_startups=total_startups)
+
+
 # ==================== PROFILE ====================
 @faculty_bp.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -973,6 +998,98 @@ def analytics_team():
         'team_sizes': team_sizes
     })
 
+
+@faculty_bp.route('/api/analytics/college-users')
+@login_required
+@role_required('Faculty')
+def analytics_college_users():
+    """Get college-wide user distribution and approval status."""
+    total_students = Person.query.filter_by(type='Student').count()
+    total_faculty = Person.query.filter_by(type='Faculty').count()
+    total_admin = Person.query.filter_by(type='Admin').count()
+    approved = Person.query.filter_by(is_approved=True).count()
+    pending = Person.query.filter_by(is_approved=False).count()
+
+    return jsonify({
+        'students': total_students,
+        'faculty': total_faculty,
+        'admin': total_admin,
+        'approved': approved,
+        'pending': pending
+    })
+
+
+@faculty_bp.route('/api/analytics/college-projects')
+@login_required
+@role_required('Faculty')
+def analytics_college_projects():
+    """Get college-wide project status distribution."""
+    proposed = ResearchProject.query.filter_by(project_status='Proposed').count()
+    ongoing = ResearchProject.query.filter_by(project_status='Ongoing').count()
+    completed = ResearchProject.query.filter_by(project_status='Completed').count()
+    on_hold = ResearchProject.query.filter_by(project_status='On Hold').count()
+
+    return jsonify({
+        'proposed': proposed,
+        'ongoing': ongoing,
+        'completed': completed,
+        'on_hold': on_hold
+    })
+
+
+@faculty_bp.route('/api/analytics/college-publications')
+@login_required
+@role_required('Faculty')
+def analytics_college_publications():
+    """Get college-wide publication status breakdown."""
+    submitted = Publication.query.filter_by(status='Submitted').count()
+    accepted = Publication.query.filter_by(status='Accepted').count()
+    published = Publication.query.filter_by(status='Published').count()
+    rejected = Publication.query.filter_by(status='Rejected').count()
+
+    return jsonify({
+        'submitted': submitted,
+        'accepted': accepted,
+        'published': published,
+        'rejected': rejected
+    })
+
+
+@faculty_bp.route('/api/analytics/college-iprs')
+@login_required
+@role_required('Faculty')
+def analytics_college_iprs():
+    """Get college-wide IPR grant status distribution."""
+    filed = IPR.query.filter_by(grant_status='Filed').count()
+    pending = IPR.query.filter_by(grant_status='Pending').count()
+    granted = IPR.query.filter_by(grant_status='Granted').count()
+    rejected = IPR.query.filter_by(grant_status='Rejected').count()
+
+    return jsonify({
+        'filed': filed,
+        'pending': pending,
+        'granted': granted,
+        'rejected': rejected
+    })
+
+
+@faculty_bp.route('/api/analytics/domains')
+@login_required
+@role_required('Faculty')
+def analytics_domains():
+    """Get college-wide project domain distribution."""
+    results = db.session.query(
+        ResearchProject.domain,
+        db.func.count(ResearchProject.project_id)
+    ).filter(ResearchProject.domain != None).group_by(ResearchProject.domain).all()
+
+    domains = [r[0] for r in results]
+    counts = [r[1] for r in results]
+
+    return jsonify({
+        'domains': domains,
+        'counts': counts
+    })
 
 
 # ==================== VIEW ALL COMPETITIONS (Faculty) ====================
