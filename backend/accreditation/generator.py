@@ -222,7 +222,263 @@ class AccreditationReportGenerator:
         }
         
         return metrics
-    
+
+    def get_project_details(self, year=None, department=None):
+        """Return all research projects with related details."""
+        projects = self._project_query(year, department).all()
+        details = []
+
+        for project in projects:
+            faculty = project.get_faculty()
+            members = []
+            for member_row in project.get_team_members():
+                if isinstance(member_row, tuple) and len(member_row) > 1:
+                    _, person = member_row
+                else:
+                    person = member_row
+                members.append({
+                    'person_id': getattr(person, 'person_id', None),
+                    'name': getattr(person, 'name', ''),
+                    'email': getattr(person, 'email', ''),
+                    'department': getattr(person, 'department', ''),
+                    'role': getattr(person, 'type', ''),
+                })
+
+            startup = project.get_startup()
+
+            details.append({
+                'project_id': project.project_id,
+                'project_title': project.project_title,
+                'project_description': project.project_description or '',
+                'domain': project.domain or '',
+                'department': project.department or '',
+                'required_skills': project.required_skills or '',
+                'team_size': project.team_size or 0,
+                'start_date': project.start_date.isoformat() if project.start_date else None,
+                'end_date': project.end_date.isoformat() if project.end_date else None,
+                'project_status': project.project_status or '',
+                'iic_registration_status': project.iic_registration_status or '',
+                'project_level': project.project_level or '',
+                'program_location': project.program_location or '',
+                'is_approved': bool(project.is_approved),
+                'is_startup_converted': bool(project.is_startup_converted),
+                'created_at': project.created_at.isoformat() if project.created_at else None,
+                'updated_at': project.updated_at.isoformat() if project.updated_at else None,
+                'faculty': {
+                    'person_id': getattr(faculty, 'person_id', None),
+                    'name': getattr(faculty, 'name', ''),
+                    'email': getattr(faculty, 'email', ''),
+                    'department': getattr(faculty, 'department', ''),
+                },
+                'team_members': members,
+                'startup': {
+                    'startup_id': startup.startup_id if startup else None,
+                    'startup_name': startup.startup_name if startup else '',
+                    'development_status': startup.development_status if startup else '',
+                    'fund_amount': startup.fund_amount if startup else 0,
+                    'revenue_generated': startup.revenue_generated if startup else 0,
+                    'registration_number': startup.registration_number if startup else '',
+                    'created_at': startup.created_at.isoformat() if startup and startup.created_at else None,
+                    'updated_at': startup.updated_at.isoformat() if startup and startup.updated_at else None,
+                } if startup else {},
+            })
+
+        return details
+
+    def get_publication_details(self, year=None, department=None):
+        """Return all publications with related project and faculty details."""
+        query = Publication.query.join(
+            ResearchProject, Publication.project_id == ResearchProject.project_id
+        )
+
+        department = self._normalize_department(department)
+        if department:
+            query = query.filter(func.lower(ResearchProject.department) == department.lower())
+
+        publications = query.all()
+        details = []
+
+        for pub in publications:
+            project = ResearchProject.query.get(pub.project_id)
+            faculty = project.get_faculty() if project else None
+            details.append({
+                'publication_id': pub.publication_id,
+                'project_id': pub.project_id,
+                'project_title': project.project_title if project else '',
+                'title': pub.title,
+                'publication_type': pub.publication_type or '',
+                'venue': pub.venue or '',
+                'publication_date': pub.publication_date.isoformat() if pub.publication_date else None,
+                'indexing': pub.indexing or '',
+                'page_number': pub.page_number or '',
+                'year_of_publication': pub.year_of_publication,
+                'volume': pub.volume or '',
+                'doi': pub.doi or '',
+                'issn_isbn': pub.issn_isbn or '',
+                'publisher': pub.publisher or '',
+                'document_url': pub.document_url or '',
+                'status': pub.status or '',
+                'created_at': pub.created_at.isoformat() if pub.created_at else None,
+                'updated_at': pub.updated_at.isoformat() if pub.updated_at else None,
+                'faculty': {
+                    'person_id': getattr(faculty, 'person_id', None),
+                    'name': getattr(faculty, 'name', ''),
+                    'email': getattr(faculty, 'email', ''),
+                    'department': getattr(faculty, 'department', ''),
+                } if faculty else {},
+            })
+
+        return details
+
+    def get_ipr_details(self, year=None, department=None):
+        """Return all IPR records with related project and publication data."""
+        query = IPR.query.join(
+            ResearchProject, IPR.project_id == ResearchProject.project_id
+        )
+
+        department = self._normalize_department(department)
+        if department:
+            query = query.filter(func.lower(ResearchProject.department) == department.lower())
+
+        iprs = query.all()
+        details = []
+
+        for ipr in iprs:
+            project = ResearchProject.query.get(ipr.project_id)
+            publication = Publication.query.get(ipr.publication_id) if ipr.publication_id else None
+            faculty = project.get_faculty() if project else None
+            details.append({
+                'ipr_id': ipr.ipr_id,
+                'project_id': ipr.project_id,
+                'project_title': project.project_title if project else '',
+                'publication_id': ipr.publication_id,
+                'publication_title': publication.title if publication else '',
+                'innovation_title': ipr.innovation_title or '',
+                'ipr_type': ipr.ipr_type or '',
+                'application_number': ipr.application_number or '',
+                'filing_date': ipr.filing_date.isoformat() if ipr.filing_date else None,
+                'registration_date': ipr.registration_date.isoformat() if ipr.registration_date else None,
+                'grant_date': ipr.grant_date.isoformat() if ipr.grant_date else None,
+                'expiry_date': ipr.expiry_date.isoformat() if ipr.expiry_date else None,
+                'grant_status': ipr.grant_status or '',
+                'ownership_type': ipr.ownership_type or '',
+                'document_url': ipr.document_url or '',
+                'created_at': ipr.created_at.isoformat() if ipr.created_at else None,
+                'updated_at': ipr.updated_at.isoformat() if ipr.updated_at else None,
+                'faculty': {
+                    'person_id': getattr(faculty, 'person_id', None),
+                    'name': getattr(faculty, 'name', ''),
+                    'email': getattr(faculty, 'email', ''),
+                    'department': getattr(faculty, 'department', ''),
+                } if faculty else {},
+            })
+
+        return details
+
+    def get_startup_details(self, year=None, department=None):
+        """Return all startup records with related project and faculty details."""
+        query = Startup.query.join(
+            ResearchProject, Startup.project_id == ResearchProject.project_id
+        )
+
+        department = self._normalize_department(department)
+        if department:
+            query = query.filter(func.lower(ResearchProject.department) == department.lower())
+
+        startups = query.all()
+        details = []
+
+        for startup in startups:
+            project = ResearchProject.query.get(startup.project_id)
+            faculty = project.get_faculty() if project else None
+            details.append({
+                'startup_id': startup.startup_id,
+                'project_id': startup.project_id,
+                'project_title': project.project_title if project else '',
+                'startup_name': startup.startup_name or '',
+                'registration_number': startup.registration_number or '',
+                'revenue_generated': startup.revenue_generated or 0,
+                'development_status': startup.development_status or '',
+                'fund_amount': startup.fund_amount or 0,
+                'created_at': startup.created_at.isoformat() if startup.created_at else None,
+                'updated_at': startup.updated_at.isoformat() if startup.updated_at else None,
+                'faculty': {
+                    'person_id': getattr(faculty, 'person_id', None),
+                    'name': getattr(faculty, 'name', ''),
+                    'email': getattr(faculty, 'email', ''),
+                    'department': getattr(faculty, 'department', ''),
+                } if faculty else {},
+            })
+
+        return details
+
+    def get_faculty_details(self, year=None, department=None):
+        """Return faculty records with engagement metrics."""
+        faculty_query = Person.query.filter_by(type='Faculty')
+        if department and department != 'All':
+            department_filter = department.strip().lower()
+            faculty_query = faculty_query.filter(func.lower(Person.department) == department_filter)
+
+        details = []
+        for faculty in faculty_query.all():
+            projects_count = ResearchProject.query.filter_by(faculty_id=faculty.person_id).count()
+            publications_count = db.session.query(func.count(Publication.publication_id)).join(
+                ResearchProject, Publication.project_id == ResearchProject.project_id
+            ).filter(ResearchProject.faculty_id == faculty.person_id).scalar()
+            iprs_count = db.session.query(func.count(IPR.ipr_id)).join(
+                ResearchProject, IPR.project_id == ResearchProject.project_id
+            ).filter(ResearchProject.faculty_id == faculty.person_id).scalar()
+            startups_count = db.session.query(func.count(Startup.startup_id)).join(
+                ResearchProject, Startup.project_id == ResearchProject.project_id
+            ).filter(ResearchProject.faculty_id == faculty.person_id).scalar()
+
+            details.append({
+                'person_id': faculty.person_id,
+                'name': faculty.name,
+                'email': faculty.email,
+                'department': faculty.department or '',
+                'type': faculty.type,
+                'is_approved': bool(faculty.is_approved),
+                'skills': faculty.skills or '',
+                'resume_url': faculty.resume_url or '',
+                'bio': faculty.bio or '',
+                'phone': faculty.phone or '',
+                'project_count': projects_count,
+                'publication_count': publications_count or 0,
+                'ipr_count': iprs_count or 0,
+                'startup_count': startups_count or 0,
+            })
+
+        return details
+
+    def get_student_details(self, year=None, department=None):
+        """Return student records with research participation metrics."""
+        student_query = Person.query.filter_by(type='Student')
+        if department and department != 'All':
+            department_filter = department.strip().lower()
+            student_query = student_query.filter(func.lower(Person.department) == department_filter)
+
+        details = []
+        for student in student_query.all():
+            projects_count = db.session.query(func.count(ProjectPerson.project_id)).filter(
+                ProjectPerson.person_id == student.person_id
+            ).scalar()
+            details.append({
+                'person_id': student.person_id,
+                'name': student.name,
+                'email': student.email,
+                'department': student.department or '',
+                'type': student.type,
+                'is_approved': bool(student.is_approved),
+                'skills': student.skills or '',
+                'resume_url': student.resume_url or '',
+                'bio': student.bio or '',
+                'phone': student.phone or '',
+                'project_count': projects_count or 0,
+            })
+
+        return details
+
     # ==================== HELPER METHODS ====================
     
     def _group_by_domain(self, projects):
@@ -289,6 +545,13 @@ class AccreditationReportGenerator:
             'startups': self.get_startup_metrics(year, department),
             'faculty': self.get_faculty_metrics(year, department),
             'students': self.get_student_metrics(year, department),
+
+            'project_records': self.get_project_details(year, department),
+            'publication_records': self.get_publication_details(year, department),
+            'ipr_records': self.get_ipr_details(year, department),
+            'startup_records': self.get_startup_details(year, department),
+            'faculty_records': self.get_faculty_details(year, department),
+            'student_records': self.get_student_details(year, department),
         }
         
         # Add summary
@@ -330,6 +593,36 @@ class AccreditationReportGenerator:
             'filename': f"CCEW_Accreditation_Report_{year or self.report_date.year}.pdf"
         }
     
+    def _render_records_table(self, title, records, columns):
+        """Render a generic HTML table of records for PDF output."""
+        html = f"""
+    <h2>{title}</h2>
+    <table>
+        <tr>
+"""
+        for _, heading in columns:
+            html += f"            <th>{heading}</th>\n"
+        html += "        </tr>\n"
+
+        if not records:
+            html += '        <tr><td colspan="{0}" style="color:#718096;">No records found.</td></tr>\n'.format(len(columns))
+        else:
+            for record in records:
+                html += '        <tr>'
+                for key, _ in columns:
+                    value = record.get(key, '')
+                    if isinstance(value, list):
+                        value = ', '.join(str(v) for v in value)
+                    elif isinstance(value, dict):
+                        value = ', '.join(f"{k}: {v}" for k, v in value.items() if v)
+                    elif value is None:
+                        value = ''
+                    html += f"<td>{value}</td>"
+                html += '</tr>\n'
+
+        html += "    </table>\n"
+        return html
+
     def _format_for_pdf(self, report_data):
         """Format report data for PDF rendering"""
         html = f"""
@@ -423,7 +716,132 @@ class AccreditationReportGenerator:
         
         html += """
     </table>
-    
+
+"""
+        html += self._render_records_table(
+            'Project Records',
+            report_data.get('project_records', []),
+            [
+                ('project_id', 'Project ID'),
+                ('project_title', 'Title'),
+                ('project_description', 'Description'),
+                ('domain', 'Domain'),
+                ('department', 'Department'),
+                ('project_status', 'Status'),
+                ('team_size', 'Team Size'),
+                ('start_date', 'Start Date'),
+                ('end_date', 'End Date'),
+                ('iic_registration_status', 'IIC Status'),
+                ('project_level', 'Level'),
+                ('program_location', 'Location'),
+                ('is_approved', 'Approved'),
+                ('is_startup_converted', 'Startup Converted'),
+                ('faculty', 'Faculty'),
+                ('team_members', 'Team Members'),
+            ]
+        )
+
+        html += self._render_records_table(
+            'Publication Records',
+            report_data.get('publication_records', []),
+            [
+                ('publication_id', 'Publication ID'),
+                ('project_id', 'Project ID'),
+                ('project_title', 'Project Title'),
+                ('title', 'Title'),
+                ('publication_type', 'Type'),
+                ('venue', 'Venue'),
+                ('publication_date', 'Publication Date'),
+                ('indexing', 'Indexing'),
+                ('page_number', 'Pages'),
+                ('year_of_publication', 'Year'),
+                ('volume', 'Volume'),
+                ('doi', 'DOI'),
+                ('issn_isbn', 'ISSN/ISBN'),
+                ('publisher', 'Publisher'),
+                ('document_url', 'Document URL'),
+                ('status', 'Status'),
+                ('faculty', 'Faculty'),
+            ]
+        )
+
+        html += self._render_records_table(
+            'IPR Records',
+            report_data.get('ipr_records', []),
+            [
+                ('ipr_id', 'IPR ID'),
+                ('project_id', 'Project ID'),
+                ('project_title', 'Project Title'),
+                ('publication_id', 'Publication ID'),
+                ('publication_title', 'Publication Title'),
+                ('innovation_title', 'Innovation Title'),
+                ('ipr_type', 'Type'),
+                ('application_number', 'Application #'),
+                ('filing_date', 'Filing Date'),
+                ('registration_date', 'Registration Date'),
+                ('grant_date', 'Grant Date'),
+                ('expiry_date', 'Expiry Date'),
+                ('grant_status', 'Status'),
+                ('ownership_type', 'Ownership'),
+                ('document_url', 'Document URL'),
+                ('faculty', 'Faculty'),
+            ]
+        )
+
+        html += self._render_records_table(
+            'Startup Records',
+            report_data.get('startup_records', []),
+            [
+                ('startup_id', 'Startup ID'),
+                ('project_id', 'Project ID'),
+                ('project_title', 'Project Title'),
+                ('startup_name', 'Startup Name'),
+                ('registration_number', 'Registration #'),
+                ('development_status', 'Status'),
+                ('fund_amount', 'Funds'),
+                ('revenue_generated', 'Revenue'),
+                ('faculty', 'Faculty'),
+            ]
+        )
+
+        html += self._render_records_table(
+            'Faculty Records',
+            report_data.get('faculty_records', []),
+            [
+                ('person_id', 'Faculty ID'),
+                ('name', 'Name'),
+                ('email', 'Email'),
+                ('department', 'Department'),
+                ('is_approved', 'Approved'),
+                ('skills', 'Skills'),
+                ('resume_url', 'Resume URL'),
+                ('bio', 'Bio'),
+                ('phone', 'Phone'),
+                ('project_count', 'Projects'),
+                ('publication_count', 'Publications'),
+                ('ipr_count', 'IPRs'),
+                ('startup_count', 'Startups'),
+            ]
+        )
+
+        html += self._render_records_table(
+            'Student Records',
+            report_data.get('student_records', []),
+            [
+                ('person_id', 'Student ID'),
+                ('name', 'Name'),
+                ('email', 'Email'),
+                ('department', 'Department'),
+                ('is_approved', 'Approved'),
+                ('skills', 'Skills'),
+                ('resume_url', 'Resume URL'),
+                ('bio', 'Bio'),
+                ('phone', 'Phone'),
+                ('project_count', 'Projects'),
+            ]
+        )
+
+        html += """
     <footer style="margin-top: 50px; text-align: center; color: #666; font-size: 0.9em;">
         <p>This is an auto-generated accreditation report from CCEW Research Portal</p>
         <p>Cummins College of Engineering for Women, Pune</p>

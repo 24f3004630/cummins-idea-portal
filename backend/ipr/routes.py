@@ -7,7 +7,10 @@ Handles all IPR-related operations including:
 - Faculty and project associations
 """
 
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
+import json
+from io import BytesIO
+
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash, make_response
 from datetime import datetime, timedelta
 from sqlalchemy import func, extract
 from sqlalchemy.orm import joinedload
@@ -281,53 +284,118 @@ def delete_ipr(ipr_id):
 
 @ipr_bp.route('/export', methods=['GET'])
 def export_iprs():
-    """Export IPR data to CSV"""
+    """Export IPR data to CSV, JSON, or PDF."""
     try:
         import csv
         from io import StringIO
         from flask import make_response
-        
+
+        fmt = request.args.get('format', 'csv').lower()
         ipr_data = get_ipr_data(db)
-        
-        # Create CSV
-        output = StringIO()
-        writer = csv.writer(output)
-        
-        # Header
-        writer.writerow([
-            'Innovation Title',
-            'IPR Type',
-            'Faculty',
-            'Department',
-            'Status',
-            'Application Number',
-            'Filing Date',
-            'Grant Date',
-            'Project'
-        ])
-        
-        # Data
+
+        records = []
         for item in ipr_data:
             ipr, faculty, project = item
+            records.append({
+                'ipr_id': getattr(ipr, 'ipr_id', None),
+                'innovation_title': getattr(ipr, 'innovation_title', ''),
+                'description': getattr(ipr, 'description', ''),
+                'ipr_type': getattr(ipr, 'ipr_type', ''),
+                'grant_status': getattr(ipr, 'grant_status', ''),
+                'application_number': getattr(ipr, 'application_number', '') or '',
+                'filing_date': getattr(ipr, 'filing_date', None),
+                'grant_date': getattr(ipr, 'grant_date', None),
+                'project_title': getattr(project, 'project_title', '') if project else '',
+                'faculty_name': getattr(faculty, 'name', '') if faculty else '',
+                'faculty_department': getattr(faculty, 'department', '') if faculty else '',
+                'project_id': getattr(project, 'project_id', None) if project else None,
+                'faculty_id': getattr(faculty, 'faculty_id', None) if faculty else None,
+                'related_project_description': getattr(project, 'project_description', '') if project else '',
+                'related_project_domain': getattr(project, 'domain', '') if project else '',
+                'related_project_department': getattr(project, 'department', '') if project else '',
+            })
+
+        if fmt == 'json':
+            response = make_response(json.dumps(records, indent=2, default=str))
+            response.headers['Content-Disposition'] = 'attachment; filename=iprs_export.json'
+            response.headers['Content-Type'] = 'application/json'
+            return response
+
+        if fmt == 'pdf':
+            try:
+                from weasyprint import HTML
+                html = '<html><head><style>body{font-family:Arial,sans-serif;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ccc;padding:8px;text-align:left;}th{background:#0B3D91;color:#fff;}</style></head><body>'
+                html += '<h1>IPR Export Report</h1>'
+                html += '<table><tr>'
+                headers = [
+                    'IPR ID', 'Innovation Title', 'Description', 'IPR Type', 'Grant Status',
+                    'Application Number', 'Filing Date', 'Grant Date', 'Project', 'Faculty',
+                    'Faculty Department', 'Project Domain', 'Project Department'
+                ]
+                for header in headers:
+                    html += f'<th>{header}</th>'
+                html += '</tr>'
+                for record in records:
+                    html += '<tr>'
+                    html += f'<td>{record.get("ipr_id", "")}</td>'
+                    html += f'<td>{record.get("innovation_title", "")}</td>'
+                    html += f'<td>{record.get("description", "")}</td>'
+                    html += f'<td>{record.get("ipr_type", "")}</td>'
+                    html += f'<td>{record.get("grant_status", "")}</td>'
+                    html += f'<td>{record.get("application_number", "")}</td>'
+                    html += f'<td>{record.get("filing_date", "")}</td>'
+                    html += f'<td>{record.get("grant_date", "")}</td>'
+                    html += f'<td>{record.get("project_title", "")}</td>'
+                    html += f'<td>{record.get("faculty_name", "")}</td>'
+                    html += f'<td>{record.get("faculty_department", "")}</td>'
+                    html += f'<td>{record.get("related_project_domain", "")}</td>'
+                    html += f'<td>{record.get("related_project_department", "")}</td>'
+                    html += '</tr>'
+                html += '</table></body></html>'
+                pdf = HTML(string=html).write_pdf()
+                response = make_response(pdf)
+                response.headers['Content-Disposition'] = 'attachment; filename=iprs_export.pdf'
+                response.headers['Content-Type'] = 'application/pdf'
+                return response
+            except Exception:
+                # Fallback to JSON if PDF generation is unavailable
+                response = make_response(json.dumps(records, indent=2, default=str))
+                response.headers['Content-Disposition'] = 'attachment; filename=iprs_export.json'
+                response.headers['Content-Type'] = 'application/json'
+                return response
+
+        # Default to CSV
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow([
+            'IPR ID', 'Innovation Title', 'Description', 'IPR Type', 'Grant Status',
+            'Application Number', 'Filing Date', 'Grant Date', 'Project ID', 'Project Title',
+            'Project Domain', 'Project Department', 'Faculty ID', 'Faculty Name', 'Faculty Department'
+        ])
+        for record in records:
             writer.writerow([
-                ipr.innovation_title,
-                ipr.ipr_type,
-                faculty.name if faculty else '',
-                faculty.department if faculty else '',
-                ipr.grant_status,
-                ipr.application_number or '',
-                ipr.filing_date.strftime('%d-%b-%Y') if ipr.filing_date else '',
-                ipr.grant_date.strftime('%d-%b-%Y') if ipr.grant_date else '',
-                project.project_title if project else ''
+                record.get('ipr_id'),
+                record.get('innovation_title'),
+                record.get('description'),
+                record.get('ipr_type'),
+                record.get('grant_status'),
+                record.get('application_number'),
+                record.get('filing_date'),
+                record.get('grant_date'),
+                record.get('project_id'),
+                record.get('project_title'),
+                record.get('related_project_domain'),
+                record.get('related_project_department'),
+                record.get('faculty_id'),
+                record.get('faculty_name'),
+                record.get('faculty_department'),
             ])
-        
-        # Prepare response
+
         response = make_response(output.getvalue())
         response.headers['Content-Disposition'] = 'attachment; filename=iprs_export.csv'
         response.headers['Content-Type'] = 'text/csv'
-        
         return response
-        
+
     except Exception as e:
         flash(f'Error exporting IPR data: {str(e)}', 'danger')
         return redirect(url_for('ipr.management'))

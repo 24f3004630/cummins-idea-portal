@@ -149,6 +149,154 @@ def generate_accreditation_csv(self, year: int = None, department: str = None):
                 writer.writerow([key.replace("_", " ").title(), val])
         writer.writerow([])
 
+    writer.writerow(["PROJECT RECORDS"])
+    writer.writerow([
+        'Project ID', 'Title', 'Description', 'Domain', 'Department', 'Status',
+        'Team Size', 'Start Date', 'End Date', 'IIC Status', 'Level', 'Location',
+        'Approved', 'Startup Converted', 'Faculty Name', 'Faculty Email', 'Team Members'
+    ])
+    for project in report.get('project_records', []):
+        writer.writerow([
+            project.get('project_id'),
+            project.get('project_title'),
+            project.get('project_description'),
+            project.get('domain'),
+            project.get('department'),
+            project.get('project_status'),
+            project.get('team_size'),
+            project.get('start_date'),
+            project.get('end_date'),
+            project.get('iic_registration_status'),
+            project.get('project_level'),
+            project.get('program_location'),
+            project.get('is_approved'),
+            project.get('is_startup_converted'),
+            project.get('faculty', {}).get('name'),
+            project.get('faculty', {}).get('email'),
+            ', '.join([m.get('name', '') for m in project.get('team_members', [])])
+        ])
+    writer.writerow([])
+
+    writer.writerow(["PUBLICATION RECORDS"])
+    writer.writerow([
+        'Publication ID', 'Project ID', 'Project Title', 'Title', 'Type', 'Venue',
+        'Publication Date', 'Indexing', 'Pages', 'Year', 'Volume', 'DOI',
+        'ISSN/ISBN', 'Publisher', 'Document URL', 'Status', 'Faculty Name', 'Faculty Email'
+    ])
+    for pub in report.get('publication_records', []):
+        writer.writerow([
+            pub.get('publication_id'),
+            pub.get('project_id'),
+            pub.get('project_title'),
+            pub.get('title'),
+            pub.get('publication_type'),
+            pub.get('venue'),
+            pub.get('publication_date'),
+            pub.get('indexing'),
+            pub.get('page_number'),
+            pub.get('year_of_publication'),
+            pub.get('volume'),
+            pub.get('doi'),
+            pub.get('issn_isbn'),
+            pub.get('publisher'),
+            pub.get('document_url'),
+            pub.get('status'),
+            pub.get('faculty', {}).get('name'),
+            pub.get('faculty', {}).get('email'),
+        ])
+    writer.writerow([])
+
+    writer.writerow(["IPR RECORDS"])
+    writer.writerow([
+        'IPR ID', 'Project ID', 'Project Title', 'Publication ID', 'Publication Title',
+        'Innovation Title', 'Type', 'Application Number', 'Filing Date', 'Registration Date',
+        'Grant Date', 'Expiry Date', 'Status', 'Ownership Type', 'Document URL', 'Faculty Name', 'Faculty Email'
+    ])
+    for ipr in report.get('ipr_records', []):
+        writer.writerow([
+            ipr.get('ipr_id'),
+            ipr.get('project_id'),
+            ipr.get('project_title'),
+            ipr.get('publication_id'),
+            ipr.get('publication_title'),
+            ipr.get('innovation_title'),
+            ipr.get('ipr_type'),
+            ipr.get('application_number'),
+            ipr.get('filing_date'),
+            ipr.get('registration_date'),
+            ipr.get('grant_date'),
+            ipr.get('expiry_date'),
+            ipr.get('grant_status'),
+            ipr.get('ownership_type'),
+            ipr.get('document_url'),
+            ipr.get('faculty', {}).get('name'),
+            ipr.get('faculty', {}).get('email'),
+        ])
+    writer.writerow([])
+
+    writer.writerow(["STARTUP RECORDS"])
+    writer.writerow([
+        'Startup ID', 'Project ID', 'Project Title', 'Startup Name', 'Registration Number',
+        'Development Status', 'Fund Amount', 'Revenue Generated', 'Faculty Name', 'Faculty Email'
+    ])
+    for startup in report.get('startup_records', []):
+        writer.writerow([
+            startup.get('startup_id'),
+            startup.get('project_id'),
+            startup.get('project_title'),
+            startup.get('startup_name'),
+            startup.get('registration_number'),
+            startup.get('development_status'),
+            startup.get('fund_amount'),
+            startup.get('revenue_generated'),
+            startup.get('faculty', {}).get('name'),
+            startup.get('faculty', {}).get('email'),
+        ])
+    writer.writerow([])
+
+    writer.writerow(["FACULTY RECORDS"])
+    writer.writerow([
+        'Faculty ID', 'Name', 'Email', 'Department', 'Approved', 'Skills',
+        'Resume URL', 'Bio', 'Phone', 'Project Count', 'Publication Count', 'IPR Count', 'Startup Count'
+    ])
+    for faculty in report.get('faculty_records', []):
+        writer.writerow([
+            faculty.get('person_id'),
+            faculty.get('name'),
+            faculty.get('email'),
+            faculty.get('department'),
+            faculty.get('is_approved'),
+            faculty.get('skills'),
+            faculty.get('resume_url'),
+            faculty.get('bio'),
+            faculty.get('phone'),
+            faculty.get('project_count'),
+            faculty.get('publication_count'),
+            faculty.get('ipr_count'),
+            faculty.get('startup_count'),
+        ])
+    writer.writerow([])
+
+    writer.writerow(["STUDENT RECORDS"])
+    writer.writerow([
+        'Student ID', 'Name', 'Email', 'Department', 'Approved', 'Skills',
+        'Resume URL', 'Bio', 'Phone', 'Project Count'
+    ])
+    for student in report.get('student_records', []):
+        writer.writerow([
+            student.get('person_id'),
+            student.get('name'),
+            student.get('email'),
+            student.get('department'),
+            student.get('is_approved'),
+            student.get('skills'),
+            student.get('resume_url'),
+            student.get('bio'),
+            student.get('phone'),
+            student.get('project_count'),
+        ])
+    writer.writerow([])
+
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"CCEW_Accreditation_{year}_{ts}.csv"
     output_path = os.path.join(_reports_dir(), filename)
