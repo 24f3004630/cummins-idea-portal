@@ -1,9 +1,11 @@
+import os
 from flask import Flask, render_template, session
 from backend.config import Config
 from backend.database.db import db
 
-# CREATE APP FIRST
-app = Flask(__name__)
+# CREATE APP FIRST (point templates to frontend/templates)
+template_folder = os.path.join(os.path.dirname(__file__), 'frontend', 'templates')
+app = Flask(__name__, template_folder=template_folder)
 app.config.from_object(Config)
 
 # Set session configuration

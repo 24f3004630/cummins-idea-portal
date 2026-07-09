@@ -15,7 +15,7 @@ import csv
 from datetime import datetime
 from io import StringIO
 
-from app import celery
+from backend.app import celery
 
 
 # ────────────────────────────────────────────────────────────────────────────

@@ -11,8 +11,8 @@ from flask import Flask, render_template, session
 from flask_mail import Mail
 from celery import Celery
 
-from config import Config
-from database.db import db
+from .config import Config
+from .database.db import db
 
 # ── Create the Celery instance FIRST (before Flask app) ──────────────────────
 # This allows tasks to import `from app import celery` without circular issues.
@@ -49,7 +49,7 @@ def create_app(config_class=Config):
     )
 
     # Beat schedule
-    from celery_beat_schedule import CELERYBEAT_SCHEDULE
+    from .celery_beat_schedule import CELERYBEAT_SCHEDULE
     celery.conf.beat_schedule = CELERYBEAT_SCHEDULE
 
     # Make every Celery task automatically push a Flask app context
@@ -63,10 +63,10 @@ def create_app(config_class=Config):
     celery.Task = ContextTask
 
     # ── Register blueprints ───────────────────────────────────────────────────
-    from auth.routes import auth_bp
-    from admin.routes import admin_bp
-    from faculty.routes import faculty_bp
-    from student.routes import student_bp
+    from .auth.routes import auth_bp
+    from .admin.routes import admin_bp
+    from .faculty.routes import faculty_bp
+    from .student.routes import student_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
@@ -74,7 +74,7 @@ def create_app(config_class=Config):
     app.register_blueprint(student_bp)
 
     # ── Seed DB ───────────────────────────────────────────────────────────────
-    from database.models import Person
+    from .database.models import Person
     with app.app_context():
         db.create_all()
         if not Person.query.filter_by(email="admin@portal.com").first():

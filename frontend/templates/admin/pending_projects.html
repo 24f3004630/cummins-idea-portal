@@ -33,7 +33,7 @@
 
                     <!-- Project Description -->
                     <div class="mb-3">
-                        <p class="text-muted small">{{ item.project.project_description[:200] }}...</p>
+                        <p class="text-muted small">{{ (item.project.project_description or 'No description available')[:200] }}{% if item.project.project_description %}...{% endif %}</p>
                     </div>
 
                     <!-- Required Skills -->

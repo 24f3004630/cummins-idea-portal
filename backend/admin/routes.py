@@ -427,7 +427,7 @@ def view_competitions():
 @role_required('Admin')
 def accreditation_dashboard():
     """Accreditation report dashboard"""
-    from accreditation.generator import AccreditationReportGenerator
+    from backend.accreditation.generator import AccreditationReportGenerator
     
     current_year = request.args.get('year', default=datetime.now().year, type=int)
     
@@ -456,10 +456,10 @@ def generate_accreditation_report():
 
     try:
         if report_format == 'csv':
-            from tasks.report_tasks import generate_accreditation_csv
+            from backend.tasks.report_tasks import generate_accreditation_csv
             task = generate_accreditation_csv.delay(year)
         else:
-            from tasks.report_tasks import generate_accreditation_pdf
+            from backend.tasks.report_tasks import generate_accreditation_pdf
             task = generate_accreditation_pdf.delay(year)
 
         return jsonify({
@@ -484,7 +484,7 @@ def task_status(task_id):
     Poll the status of any Celery background task.
     State values: PENDING | STARTED | PROGRESS | SUCCESS | FAILURE
     """
-    from app import celery
+    from backend.app import celery
     from celery.result import AsyncResult
 
     result = AsyncResult(task_id, app=celery)
@@ -522,7 +522,7 @@ def send_reminder():
     Sends emails to all active faculty + students immediately.
     POST body (JSON or form): { "target": "all" | "faculty" | "students" }
     """
-    from tasks.mail_tasks import (
+    from backend.tasks.mail_tasks import (
         send_report_reminder_all_faculty,
         send_report_reminder_all_students,
     )
@@ -555,7 +555,7 @@ def send_reminder():
 @role_required('Admin')
 def download_accreditation_report(format):
     """Download accreditation report in specified format"""
-    from accreditation.generator import AccreditationReportGenerator
+    from backend.accreditation.generator import AccreditationReportGenerator
     from flask import send_file
     import csv
     from io import StringIO, BytesIO
